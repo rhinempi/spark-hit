@@ -1,6 +1,10 @@
 package uni.bielefeld.cmg.sparkhit.pipeline;
 
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.broadcast.Broadcast;
 import uni.bielefeld.cmg.sparkhit.io.FastqUnitBuffer;
 import uni.bielefeld.cmg.sparkhit.io.TextFileBufferInput;
 import uni.bielefeld.cmg.sparkhit.io.TextFileBufferOutput;
@@ -8,12 +12,17 @@ import uni.bielefeld.cmg.sparkhit.matrix.ScoreMatrix;
 import uni.bielefeld.cmg.sparkhit.reference.RefSerializer;
 import uni.bielefeld.cmg.sparkhit.reference.RefStructBuilder;
 import uni.bielefeld.cmg.sparkhit.reference.RefStructSerializer;
+import uni.bielefeld.cmg.sparkhit.struct.BinaryBlock;
+import uni.bielefeld.cmg.sparkhit.struct.KmerLoc;
+import uni.bielefeld.cmg.sparkhit.struct.RefTitle;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by rhinempi on 27/01/16.
@@ -38,7 +47,7 @@ import java.io.IOException;
  */
 
 
-public class Pipelines implements Pipeline {
+public class Pipelines implements Pipeline, Serializable{
 
     private String threadName;
 
@@ -87,6 +96,34 @@ public class Pipelines implements Pipeline {
         info.readParagraphedMessages("loaded reference genome index.\ntook " + T + " ms.");
         info.screenDump();
         ref = refSer.getStruct();
+    }
+
+    public void buildReferenceForSpark(){
+        info.readMessage("start building reference index.");
+        info.screenDump();
+        ref = new RefStructBuilder();
+
+        info.readMessage("parsing parameters ...");
+        info.screenDump();
+        ref.setParameter(param);
+        info.readMessage("kmer size : " + param.kmerSize);
+        info.screenDump();
+
+        info.readMessage("start loading reference sequence.");
+        info.screenDump();
+        clockStart();
+        ref.loadRef(param.inputFaPath);
+        long T = clockCut();
+        info.readParagraphedMessages("loaded " + ref.totalLength + " bases, " + ref.totalNum + " contigs.\ntook " + T + " ms.");
+        info.screenDump();
+
+        info.readMessage("start building reference index.");
+        info.screenDump();
+        clockStart();
+        ref.buildIndex();
+        T = clockCut();
+        info.readMessage("took " + T + " ms.");
+        info.screenDump();
     }
 
     public void buildReference(){
@@ -181,6 +218,15 @@ public class Pipelines implements Pipeline {
         pipe.start();
         processors[pipeIndex] = pipe;
     }
+
+    public void spark(){
+        SparkPipe sPipe = new SparkPipe();
+        sPipe.setParam(param);
+        sPipe.setStruct(ref);
+        sPipe.setMatrix(matrix);
+        sPipe.spark();
+    }
+
 
     public void setFastqUnitBuffer(FastqUnitBuffer inputFastqUnitBuffer){
         this.inputFastqUnitBuffer = inputFastqUnitBuffer;

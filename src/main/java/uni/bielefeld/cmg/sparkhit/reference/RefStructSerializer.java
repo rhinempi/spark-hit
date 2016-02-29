@@ -11,10 +11,7 @@ import uni.bielefeld.cmg.sparkhit.struct.RefTitle;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +40,7 @@ import java.util.List;
  */
 
 
-public class RefStructSerializer implements RefSerializer {
+public class RefStructSerializer implements RefSerializer, Serializable {
     private DefaultParam param;
     private kryoSerializer kSerializer = new kryoSerializer();
     private RefStructBuilder ref;
@@ -117,9 +114,9 @@ public class RefStructSerializer implements RefSerializer {
         String met = param.inputFaPath + ".met";
 
         kSerializer.kryoSerialization(ref.BBList, bbl, 0);
-        kSerializer.kryoSerialization(ref.block, blo, 1);
-        kSerializer.kryoSerialization(ref.title, tit, 2);
-        kSerializer.kryoSerialization(ref.index, ind, 3);
+        kSerializer.kryoSerialization(ref.block, blo, 0);
+        kSerializer.kryoSerialization(ref.title, tit, 0);
+        kSerializer.kryoSerialization(ref.index, ind, 1);
         putMetaData(met);
 
     }

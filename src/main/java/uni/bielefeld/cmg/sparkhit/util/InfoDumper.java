@@ -2,6 +2,7 @@ package uni.bielefeld.cmg.sparkhit.util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,7 +28,7 @@ import java.util.Date;
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-public class InfoDumper implements InfoManager{
+public class InfoDumper implements InfoManager, Serializable{
 
     private String message;
     private String mightyName;

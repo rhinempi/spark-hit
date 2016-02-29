@@ -41,15 +41,63 @@ public class BatchAlignPipe implements Serializable{
     private DefaultParam param;
     private AlignmentParameter pAlign;
 
-    private List<BinaryBlock> BBList;
-    private List<RefTitle> listTitle;
-    private KmerLoc[] index;
-    private ScoreMatrix mat;
-    private long totalLength;
-    private int totalNum;
+    public List<BinaryBlock> BBList;
+    public List<RefTitle> listTitle;
+    public KmerLoc[] index;
+    public ScoreMatrix mat;
+    public long totalLength;
+    public int totalNum;
+
+    /**
+     *
+     * @param param
+     */
+    public BatchAlignPipe(DefaultParam param){
+        this.param = param;
+        setAlignmentParameter();
+    }
+
+    /**
+     *
+     */
+    public BatchAlignPipe(){
+
+    }
 
     public String recruit (readInfo read){
+        List<String> alignResult;
         String alignmentResult = "";
+
+        ReadInfo rInfo = new ReadInfo(read);
+
+        if (rInfo.readSize < param.minReadSize){
+            return alignmentResult;
+        }
+
+        if (param.globalOrLocal == 1){
+            pAlign.alignLength = rInfo.readSize;
+            pAlign.bestNas = (pAlign.alignLength * param.readIdentity) / 100;
+            pAlign.bestKmers = pAlign.alignLength - (pAlign.alignLength - pAlign.bestNas) * 4 - 3;
+        }
+
+        if (readBinaryBlock(rInfo)!=0){
+            return alignmentResult;
+        }
+
+        getKmers(rInfo.readSize);
+
+        alignResult = alignment(rInfo);
+
+        for (String s : alignResult)
+        {
+            alignmentResult += s + "\t";
+        }
+
+        return alignmentResult;
+    }
+
+    public List<String> sparkRecruit (String read){
+        List<String> alignmentResult = new ArrayList<String>();
 
         ReadInfo rInfo = new ReadInfo(read);
 
@@ -73,7 +121,6 @@ public class BatchAlignPipe implements Serializable{
 
         return alignmentResult;
     }
-
     private int readBinaryBlock(ReadInfo rInfo){
         /* the same binary operation with RefSeq binary (12nt), but written in a different way */
         int i,j;
@@ -146,7 +193,7 @@ public class BatchAlignPipe implements Serializable{
         }
     }
 
-    private String alignment(ReadInfo rInfo){
+    private List<String> alignment(ReadInfo rInfo){
         int eHSPLength = Arithmetic.expectedHSPLength(param.minor, rInfo.readSize, totalLength, param.pairAlign);
         int eReadLength = Arithmetic.effectiveReadLength(rInfo.readSize, eHSPLength, param.minor);
         long eRefLength = Arithmetic.effectiveRefLength(totalLength, eHSPLength, totalNum, param.minor);
@@ -162,6 +209,7 @@ public class BatchAlignPipe implements Serializable{
         Qgram qGram;
         List<Qgram> qGramSort = new ArrayList<Qgram>();
         String outputLine = "";
+        List<String> alignResult = new ArrayList<String>();
 
 
         int kmerSkip =1; // how to extend kmers, 1bp per extension
@@ -258,10 +306,12 @@ public class BatchAlignPipe implements Serializable{
                 if (eValue > param.eValue){continue;}
                 trys = 0;
 
-                outputLine += rInfo.readName + "\t" + rInfo.readSize + "nt\t" + eValue + "\t"
+                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + eValue + "\t"
                         + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
                         + "\t+\t" + readIdentityDouble + "\t" + listTitle.get(qGram.chr).name
-                        + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1) + "\n";
+                        + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1);
+
+                alignResult.add(outputLine);
 
             } // end of foreach qGram
             qGramSort.clear();
@@ -344,14 +394,15 @@ public class BatchAlignPipe implements Serializable{
                 eValue = Arithmetic.getEValue(pAlign.bestScore, param.minor, param.lambda, eReadLength, eRefLength);
                 if (eValue > param.eValue){continue;}
                 trys = 0;
-                outputLine += rInfo.readName + "\t" + rInfo.readSize + "nt\t" + eValue + "\t"
+                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + eValue + "\t"
                         + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
                         + "\t-\t" + readIdentityDouble + "\t" + listTitle.get(qGram.chr).name
-                        + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1) + "\n";
+                        + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1);
+                alignResult.add(outputLine);
             } // end of qGram loop
         } // end of negative strand
 
-        return outputLine;
+        return alignResult;
     }
 
     private void getReadKmerHits(int length, int kmerSkip){

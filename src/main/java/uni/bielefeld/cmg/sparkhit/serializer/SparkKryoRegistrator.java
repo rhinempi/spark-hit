@@ -1,12 +1,13 @@
 package uni.bielefeld.cmg.sparkhit.serializer;
 
+import org.apache.spark.serializer.KryoRegistrator;
 import uni.bielefeld.cmg.sparkhit.matrix.ScoreMatrix;
-import uni.bielefeld.cmg.sparkhit.struct.AlignmentParameter;
-import uni.bielefeld.cmg.sparkhit.struct.BinaryBlock;
-import uni.bielefeld.cmg.sparkhit.struct.KmerLoc;
-import uni.bielefeld.cmg.sparkhit.struct.RefTitle;
+import uni.bielefeld.cmg.sparkhit.reference.RefStructBuilder;
+import uni.bielefeld.cmg.sparkhit.struct.*;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import com.esotericsoftware.kryo.Kryo;
+
+import java.util.ArrayList;
 //import org.apache.spark.serializer.KryoRegistrator;
 
 /**
@@ -30,7 +31,7 @@ import com.esotericsoftware.kryo.Kryo;
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-public class SparkKryoRegistrator /*implements KryoRegistrator */{
+public class SparkKryoRegistrator implements KryoRegistrator {
 
     public SparkKryoRegistrator (){
         /**
@@ -43,9 +44,10 @@ public class SparkKryoRegistrator /*implements KryoRegistrator */{
      * @param kryo
      */
     public void registerClasses(Kryo kryo){
-        //kryo.register(RefSeq.class);
+        kryo.register(RefStructBuilder.class);
         kryo.register(ScoreMatrix.class);
         kryo.register(BinaryBlock.class);
+        kryo.register(Block.class);
         kryo.register(RefTitle.class);
         kryo.register(KmerLoc.class);
         kryo.register(DefaultParam.class);

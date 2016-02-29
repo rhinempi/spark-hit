@@ -52,12 +52,8 @@ public class Main {
 
         Pipelines pipes = new Pipelines();
         pipes.setParameter(param);
-        if (param.inputBuildPath != null){
-            pipes.buildReference();
-        }else {
-            pipes.loadReference();
-            pipes.parallelization(param.threads);
-        }
+        pipes.buildReferenceForSpark();
+        pipes.spark();
 
     }
 

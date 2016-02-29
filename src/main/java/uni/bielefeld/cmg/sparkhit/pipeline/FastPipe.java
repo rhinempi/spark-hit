@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Created by Liren Huang on 23/01/16.
  *
- * SparkHit
+ *      SparkHit
  *
  * Copyright (c) 2015-2015
  * Liren Huang      <huanglr at cebitec.uni-bielefeld.de>
