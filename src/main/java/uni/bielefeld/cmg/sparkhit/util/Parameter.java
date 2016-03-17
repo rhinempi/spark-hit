@@ -44,6 +44,7 @@ public class Parameter {
     /* parameter IDs */
     private static final String BUILD_REF = "build",
             INPUT_FASTQ = "fastq",
+            INPUT_LINE = "line",
             INPUT_REF = "reference",
             OUTPUT_FILE = "outfile",
             KMER_SIZE = "kmer",
@@ -58,6 +59,7 @@ public class Parameter {
             HITS = "hits",
             STRAND = "strand",
             THREADS = "thread",
+            PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
             HELP = "help";
@@ -70,6 +72,7 @@ public class Parameter {
 
         parameterMap.put(BUILD_REF, o++);
         parameterMap.put(INPUT_FASTQ, o++);
+        parameterMap.put(INPUT_LINE, o++);
         parameterMap.put(INPUT_REF, o++);
         parameterMap.put(OUTPUT_FILE, o++);
         parameterMap.put(KMER_SIZE, o++);
@@ -84,6 +87,7 @@ public class Parameter {
         parameterMap.put(HITS, o++);
         parameterMap.put(STRAND, o++);
         parameterMap.put(THREADS, o++);
+        parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
         parameterMap.put(HELP, o++);
         parameterMap.put(HELP2, o++);
@@ -98,8 +102,12 @@ public class Parameter {
                 .create(BUILD_REF));
 
         parameter.addOption(OptionBuilder.withArgName("input fastq file")
-                .hasArg().withDescription("Input Next Generation Sequencing (NGS) data, usually fastq format file, as input file")
+                .hasArg().withDescription("Input Next Generation Sequencing (NGS) data, fastq file format, four line per unit")
                 .create(INPUT_FASTQ));
+
+        parameter.addOption(OptionBuilder.withArgName("input line file")
+                .hasArg().withDescription("Input NGS data, line based text file format, one line per unit")
+                .create(INPUT_LINE));
 
         parameter.addOption(OptionBuilder.withArgName("input reference")
                 .hasArg().withDescription("Input genome reference file, usually fasta format file, as input file")
@@ -156,6 +164,10 @@ public class Parameter {
         parameter.addOption(OptionBuilder.withArgName("number of threads")
                 .hasArg().withDescription("How many threads to use for parallelizing processes," + "default is 1 cpu. " + "set to 0 is the number of cpus available!" + "local mode only, for Spark version, use spark parameter!")
                 .create(THREADS));
+
+        parameter.addOption(OptionBuilder.withArgName("re-partition number")
+                .hasArg().withDescription("re generate number of partitions for .gz data, as .gz data only have one partition (spark parallelization)")
+                .create(PARTITIONS));
 
         parameter.addOption(OptionBuilder
                 .hasArg(false).withDescription("show version information")
@@ -240,6 +252,10 @@ public class Parameter {
                 }
             }
 
+            if ((value = cl.getOptionValue(PARTITIONS)) != null){
+                param.partitions = Integer.decode(value);
+            }
+
             if ((value = cl.getOptionValue(EVALUE)) != null){
                 param.eValue = Double.parseDouble(value);
             }
@@ -317,10 +333,15 @@ public class Parameter {
 
 
 
-            if ((value = cl.getOptionValue(INPUT_FASTQ)) != null){
+            if ((value = cl.getOptionValue(INPUT_FASTQ)) != null) {
                 param.inputFqPath = value;
-            }else{
-                throw new IOException("Input query file not specified.\nUse -help for list of options");
+            }else if ((value = cl.getOptionValue(INPUT_LINE)) != null){
+                param.inputFqLinePath = value;
+                param.inputFqPath = value;
+            }else {
+                help.printHelp();
+                System.exit(0);
+                //throw new IOException("Input query file not specified.\nUse -help for list of options");
             }
 
 			/* not applicable for HDFS and S3 */
@@ -330,6 +351,13 @@ public class Parameter {
 //				err.println("Input query file not found.");
 //				return;
 //i			}
+
+            if ((value = cl.getOptionValue(OUTPUT_FILE)) != null){
+                param.outputPath = value;
+            }else{
+                info.readMessage("Output file not set of -outfile options");
+                info.screenDump();
+            }
 
             if ((value = cl.getOptionValue(INPUT_REF)) != null){
                 param.inputFaPath = new File(value).getAbsolutePath();
@@ -341,13 +369,6 @@ public class Parameter {
             File inputFasta = new File(param.inputFaPath).getAbsoluteFile();
             if (!inputFasta.exists()){
                 info.readMessage("Input reference file had not found.");
-                info.screenDump();
-            }
-
-            if ((value = cl.getOptionValue(OUTPUT_FILE)) != null){
-                param.outputPath = value;
-            }else{
-                info.readMessage("Output file not set of -outfile options");
                 info.screenDump();
             }
 

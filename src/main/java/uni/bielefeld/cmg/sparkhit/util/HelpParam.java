@@ -62,7 +62,7 @@ public class HelpParam {
 
         final String executable = System.getProperty("executable", "java -jar SparkHit.jar");
         err.println("Name:");
-        err.println("\tSparkHit");
+        err.println("\tSparkHit main");
         err.println();
         err.println("Options:");
         formatter.printOptions(new PrintWriter(err, true), 85, parameter, 2, 3); /* print formatted parameters */
@@ -72,6 +72,52 @@ public class HelpParam {
         err.println(executable + " [parameters] -build reference.fa");
         err.println("\trun fragment recruitment : ");
         err.println(executable + " [parameters] -fastq query.fq -reference reference.fa -outfile output_file.txt");
+        err.println(executable + " [parameters] -line query.txt -reference reference.fa -outfile output_file.txt");
         err.println();
     }
+
+    public void printConverterHelp(){
+        HelpFormatter formatter =new HelpFormatter();
+        formatter.setOptionComparator(new Comparator<Option>(){
+            public int compare(Option o1, Option o2){
+                return Integer.compare(parameterMap.get(o1.getOpt()),
+                        parameterMap.get(o2.getOpt()));
+            }
+        });
+
+        final String executable = System.getProperty("executable", "java -jar SparkHit.jar");
+        err.println("Name:");
+        err.println("\tSparkHit converter");
+        err.println();
+        err.println("Options:");
+        formatter.printOptions(new PrintWriter(err, true), 85, parameter, 2, 3); /* print formatted parameters */
+        err.println();
+        err.println("Usage:");
+        err.println("\tConvert fastq format to line :");
+        err.println(executable + " [parameters] -fastq query.fq.tar.bz2 -outfile ./outdir");
+        err.println();
+    }
+
+    public void printReporterHelp(){
+        HelpFormatter formatter =new HelpFormatter();
+        formatter.setOptionComparator(new Comparator<Option>(){
+            public int compare(Option o1, Option o2){
+                return Integer.compare(parameterMap.get(o1.getOpt()),
+                        parameterMap.get(o2.getOpt()));
+            }
+        });
+
+        final String executable = System.getProperty("executable", "java -jar SparkHit.jar");
+        err.println("Name:");
+        err.println("\tSparkHit reporter");
+        err.println();
+        err.println("Options:");
+        formatter.printOptions(new PrintWriter(err, true), 85, parameter, 2, 3); /* print formatted parameters */
+        err.println();
+        err.println("Usage:");
+        err.println("\tReport coverage");
+        err.println(executable + " [parameters] -input ./sparkhit.out -outfile ./sparkhit.report");
+        err.println();
+    }
+
 }

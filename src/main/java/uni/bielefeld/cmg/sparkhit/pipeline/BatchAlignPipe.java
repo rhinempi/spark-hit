@@ -1,6 +1,7 @@
 package uni.bielefeld.cmg.sparkhit.pipeline;
 
 
+import scala.Char;
 import uni.bielefeld.cmg.sparkhit.algorithm.Arithmetic;
 import uni.bielefeld.cmg.sparkhit.io.readInfo;
 import uni.bielefeld.cmg.sparkhit.matrix.ScoreMatrix;
@@ -9,6 +10,8 @@ import uni.bielefeld.cmg.sparkhit.struct.*;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +50,8 @@ public class BatchAlignPipe implements Serializable{
     public ScoreMatrix mat;
     public long totalLength;
     public int totalNum;
+
+
 
     /**
      *
@@ -102,6 +107,10 @@ public class BatchAlignPipe implements Serializable{
         ReadInfo rInfo = new ReadInfo(read);
 
         if (rInfo.readSize < param.minReadSize){
+            return alignmentResult;
+        }
+
+        if (rInfo.readSize > param.maxReadSize){
             return alignmentResult;
         }
 
@@ -305,10 +314,12 @@ public class BatchAlignPipe implements Serializable{
                 eValue = Arithmetic.getEValue(pAlign.bestScore, param.minor, param.lambda, eReadLength, eRefLength);
                 if (eValue > param.eValue){continue;}
                 trys = 0;
+                String formatEValue = String.format("%.2e",eValue);
+                String formatIdentity = String.format("%.2f",readIdentityDouble);
 
-                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + eValue + "\t"
+                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
                         + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
-                        + "\t+\t" + readIdentityDouble + "\t" + listTitle.get(qGram.chr).name
+                        + "\t+\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
                         + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1);
 
                 alignResult.add(outputLine);
@@ -394,9 +405,12 @@ public class BatchAlignPipe implements Serializable{
                 eValue = Arithmetic.getEValue(pAlign.bestScore, param.minor, param.lambda, eReadLength, eRefLength);
                 if (eValue > param.eValue){continue;}
                 trys = 0;
-                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + eValue + "\t"
+                String formatEValue = String.format("%.2e",eValue);
+                String formatIdentity = String.format("%.2f",readIdentityDouble);
+
+                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
                         + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
-                        + "\t-\t" + readIdentityDouble + "\t" + listTitle.get(qGram.chr).name
+                        + "\t-\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
                         + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1);
                 alignResult.add(outputLine);
             } // end of qGram loop

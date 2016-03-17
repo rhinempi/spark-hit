@@ -3,6 +3,7 @@ package uni.bielefeld.cmg.sparkhit.reference;
 
 import uni.bielefeld.cmg.sparkhit.io.TextFileBufferInput;
 import uni.bielefeld.cmg.sparkhit.io.TextFileBufferOutput;
+import uni.bielefeld.cmg.sparkhit.serializer.JavaSerializer;
 import uni.bielefeld.cmg.sparkhit.serializer.kryoSerializer;
 import uni.bielefeld.cmg.sparkhit.struct.BinaryBlock;
 import uni.bielefeld.cmg.sparkhit.struct.Block;
@@ -43,6 +44,7 @@ import java.util.List;
 public class RefStructSerializer implements RefSerializer, Serializable {
     private DefaultParam param;
     private kryoSerializer kSerializer = new kryoSerializer();
+    private JavaSerializer jSerializer = new JavaSerializer();
     private RefStructBuilder ref;
     private InfoDumper info = new InfoDumper();
 
@@ -117,6 +119,73 @@ public class RefStructSerializer implements RefSerializer, Serializable {
         kSerializer.kryoSerialization(ref.block, blo, 0);
         kSerializer.kryoSerialization(ref.title, tit, 0);
         kSerializer.kryoSerialization(ref.index, ind, 1);
+        putMetaData(met);
+
+    }
+
+    public void javaDeSerialization(){
+        String bbl = param.inputFaPath + ".bbl";
+        String blo = param.inputFaPath + ".blo";
+        String tit = param.inputFaPath + ".tit";
+        String ind = param.inputFaPath + ".ind";
+        String met = param.inputFaPath + ".met";
+
+        ref = new RefStructBuilder();
+        ref.setParameter(param);
+
+        File BBListFile = new File(bbl);
+        if (BBListFile.exists()){
+            ref.BBList = (List<BinaryBlock>) jSerializer.javaDeSerialization(bbl);
+        }else{
+            info.readMessage("reference data index : " + bbl + " is missing");
+            info.screenDump();
+        }
+
+        File blockFile = new File(blo);
+        if (blockFile.exists()){
+            ref.block = (List<Block>) jSerializer.javaDeSerialization(blo);
+        }else{
+            info.readMessage("reference data index : " + blo + " is missing");
+            info.screenDump();
+        }
+
+        File titleFile = new File(tit);
+        if (titleFile.exists()){
+            ref.title = (List<RefTitle>) jSerializer.javaDeSerialization(tit);
+        }else{
+            info.readMessage("reference data index : " + tit + " is missing");
+            info.screenDump();
+        }
+
+        File indexFile = new File(ind);
+        if (indexFile.exists()){
+            ref.index = (KmerLoc[]) jSerializer.javaDeSerialization(ind);
+        }else{
+            info.readMessage("reference data index : " + ind + " is missing");
+            info.screenDump();
+        }
+
+        File metaFile = new File(met);
+        if (metaFile.exists()){
+            readMetaData(met);
+        }else{
+            info.readMessage("reference data index : " + met + " is missing");
+            info.screenDump();
+        }
+
+    }
+
+    public void javaSerialization(){
+        String bbl = param.inputFaPath + ".bbl";
+        String blo = param.inputFaPath + ".blo";
+        String tit = param.inputFaPath + ".tit";
+        String ind = param.inputFaPath + ".ind";
+        String met = param.inputFaPath + ".met";
+
+        jSerializer.javaSerialization(ref.BBList, bbl);
+        jSerializer.javaSerialization(ref.block, blo);
+        jSerializer.javaSerialization(ref.title, tit);
+        jSerializer.javaSerialization(ref.index, ind);
         putMetaData(met);
 
     }

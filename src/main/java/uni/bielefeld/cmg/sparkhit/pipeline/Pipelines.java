@@ -126,6 +126,48 @@ public class Pipelines implements Pipeline, Serializable{
         info.screenDump();
     }
 
+    public void buildJavaReference(){
+        info.readMessage("start building reference index.");
+        info.screenDump();
+        RefStructBuilder ref = new RefStructBuilder();
+
+        info.readMessage("parsing parameters ...");
+        info.screenDump();
+        ref.setParameter(param);
+        info.readParagraphedMessages("kmer size : " + param.kmerSize + "\nout put index file to : \n\t" + param.inputFaPath + ".xxx");
+        info.screenDump();
+
+        info.readMessage("start loading reference sequence.");
+        info.screenDump();
+        clockStart();
+        ref.loadRef(param.inputFaPath);
+        long T = clockCut();
+        info.readParagraphedMessages("loaded " + ref.totalLength + " bases, " + ref.totalNum + " contigs.\ntook " + T + " ms.");
+        info.screenDump();
+
+        info.readMessage("start building reference index.");
+        info.screenDump();
+        clockStart();
+        ref.buildIndex();
+        T = clockCut();
+        info.readMessage("took " + T + " ms.");
+        info.screenDump();
+
+        RefStructSerializer refSer = new RefStructSerializer();
+        refSer.setParameter(param);
+        refSer.setStruct(ref);
+        info.readParagraphedMessages("start writing index to : \n\t" + param.inputFaPath + ".xxx");
+        info.screenDump();
+        clockStart();
+        refSer.javaSerialization();
+        T = clockCut();
+        info.readMessage("took " + T + " ms");
+        info.screenDump();
+
+        info.readMessage("finish building reference index.");
+        info.screenDump();
+    }
+
     public void buildReference(){
 
         info.readMessage("start building reference index.");
@@ -222,11 +264,24 @@ public class Pipelines implements Pipeline, Serializable{
     public void spark(){
         SparkPipe sPipe = new SparkPipe();
         sPipe.setParam(param);
-        sPipe.setStruct(ref);
-        sPipe.setMatrix(matrix);
-        sPipe.spark();
+        if (param.inputFqLinePath != null){
+            sPipe.sparkLineFile();
+        }else{
+            sPipe.spark();
+        }
     }
 
+    public void sparkReporter(){
+        SparkReportPipe sRPipe = new SparkReportPipe();
+        sRPipe.setParam(param);
+        sRPipe.spark();
+    }
+
+    public void sparkConverter(){
+        SparkConvertPipe sCPipe = new SparkConvertPipe();
+        sCPipe.setParam(param);
+        sCPipe.spark();
+    }
 
     public void setFastqUnitBuffer(FastqUnitBuffer inputFastqUnitBuffer){
         this.inputFastqUnitBuffer = inputFastqUnitBuffer;

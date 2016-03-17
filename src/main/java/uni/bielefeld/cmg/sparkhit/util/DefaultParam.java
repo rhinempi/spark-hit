@@ -33,12 +33,18 @@ public class DefaultParam implements Serializable{
     }
 
     public String mightyName = "SparkHit";
-    public String inputBuildPath;
-    public String inputFqPath;              // undefaultable
-    public String inputFaPath;
-    public String outputPath;
+    public String inputBuildPath;  // build reference data index, used by builder
+
+    public String inputResultPath; // report recruitment statistics, used by reporter
+
+    public String inputFqPath; // input query file, used by main program and converter
+    public String inputFqLinePath;  // input query file, one line per unit
+    public String inputFaPath; // input reference file, used by main program
+
+    public String outputPath;  // used by all
 
     public int threads = 1;
+    public int partitions = 0;
 
     public  int kmerSize = 11;              // default kmer length
     public  int kmerBits = (1 << (kmerSize*2)) - 1; //binary length of kmer (2bits for one Nt, all positions are one. Eg. A=3, 11111111 AAAA)
@@ -47,7 +53,7 @@ public class DefaultParam implements Serializable{
     public  int bandWidth = 4;              // band width for banded alignment
 
     public  int minReadSize=20;             // minimum read length for alignment
-    public  int maxReadSize = 5000;         // maximum read length for alignment
+    public  int maxReadSize = 500;         // maximum read length for alignment
     public  int readIdentity = 75;          // minimum identity to report a hit
     public  int globalOrLocal = 0;          // globle or local alignment, 0 for local
     public  int alignLength = 30;           // minimal alignment coverage control for the read
