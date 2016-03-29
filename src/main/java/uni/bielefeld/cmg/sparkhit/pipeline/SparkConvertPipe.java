@@ -6,8 +6,10 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.zookeeper.version.Info;
 import scala.Tuple2;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
+import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
 
 import java.io.Serializable;
 
@@ -36,6 +38,7 @@ import java.io.Serializable;
 
 public class SparkConvertPipe implements Serializable{
     private DefaultParam param;
+    private InfoDumper info = new InfoDumper();
 
     private SparkConf setSparkConfiguration(){
         SparkConf conf = new SparkConf().setAppName("SparkHit");
@@ -78,17 +81,75 @@ public class SparkConvertPipe implements Serializable{
                     lineMark = 2;
                     return line;
                 }else{
-                    lineMark++;
+                    lineMark = 2;
                     return null;
                 }
             }
         }
 
-        FastqConcat RDDConcat = new FastqConcat();
-        FastqRDD = FastqRDD.map(RDDConcat);
+        class FastqConcatWithQual implements Function<String, String>, Serializable{
+            String line = "";
+            int lineMark = 0;
+            public String call(String s) {
+                if (lineMark == 2) {
+                    lineMark++;
+                    line = line + "\t" + s;
+                    return null;
+                } else if (lineMark == 3) {
+                    lineMark++;
+                    line = line + "\t" + s;
+                    return line;
+                } else if (s.startsWith("@")) {
+                    line = s;
+                    lineMark = 1;
+                    return null;
+                } else if (lineMark == 1) {
+                    line = line + "\t" + s;
+                    lineMark++;
+                    return null;
+                }else{
+                    return null;
+                }
+            }
+        }
+
+        class FastqConcatToFasta implements Function<String, String>, Serializable{
+            String line = "";
+            int lineMark = 0;
+            public String call(String s){
+                if (s.startsWith("@")){
+                    line = s;
+                    lineMark = 1;
+                    return null;
+                }else if (lineMark == 1){
+                    line = ">" + line + "\n" + s;
+                    lineMark = 2;
+                    return line;
+                }else{
+                    lineMark = 2;
+                    return null;
+                }
+            }
+        }
+
+        if (param.outputformat == 0) {      // fastq to line without quality
+            FastqConcat RDDConcat = new FastqConcat();
+            FastqRDD = FastqRDD.map(RDDConcat);
+        }else if (param.outputformat == 1){ // fastq to line with quality
+            FastqConcatWithQual RDDConcatQ = new FastqConcatWithQual();
+            FastqRDD = FastqRDD.map(RDDConcatQ);
+        }else {                             // fastq to fasta file
+            FastqConcatToFasta RDDConcatToFasta = new FastqConcatToFasta();
+            FastqRDD = FastqRDD.map(RDDConcatToFasta);
+        }
 
         FastqFilter RDDFilter = new FastqFilter();
         FastqRDD = FastqRDD.filter(RDDFilter);
+
+        long readNumber = FastqRDD.count();
+
+        info.readMessage("Total read number: " + readNumber);
+        info.screenDump();
 
         if (param.partitions != 0) {
             FastqRDD = FastqRDD.repartition(param.partitions);

@@ -61,6 +61,7 @@ public class AlignmentParameter implements Serializable{
     public int alignLength;
     public int bestNas;
     public int bestKmers;
+    public int bestPigeon;
 
     public int fromFirst;
     public int fromSecond;
@@ -78,5 +79,6 @@ public class AlignmentParameter implements Serializable{
         this.alignLength = param.alignLength;
         this.bestNas = param.bestNas;
         this.bestKmers = param.bestKmers;
+        this.bestPigeon = param.bestPigeon;
     }
 }

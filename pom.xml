@@ -6,7 +6,7 @@
 
     <groupId>cmg</groupId>
     <artifactId>sparkhit</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <dependencies>
         <dependency> <!-- Spark dependency -->
             <groupId>org.apache.spark</groupId>

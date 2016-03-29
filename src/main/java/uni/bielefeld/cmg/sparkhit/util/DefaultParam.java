@@ -36,8 +36,9 @@ public class DefaultParam implements Serializable{
     public String inputBuildPath;  // build reference data index, used by builder
 
     public String inputResultPath; // report recruitment statistics, used by reporter
-
+    public int outputformat = 0; // used by converter
     public String inputFqPath; // input query file, used by main program and converter
+
     public String inputFqLinePath;  // input query file, one line per unit
     public String inputFaPath; // input reference file, used by main program
 
@@ -55,8 +56,8 @@ public class DefaultParam implements Serializable{
     public  int minReadSize=20;             // minimum read length for alignment
     public  int maxReadSize = 500;         // maximum read length for alignment
     public  int readIdentity = 75;          // minimum identity to report a hit
-    public  int globalOrLocal = 0;          // globle or local alignment, 0 for local
-    public  int alignLength = 30;           // minimal alignment coverage control for the read
+    public  int globalOrLocal = 1;          // globle or local alignment, 0 for local
+    public  int alignLength = 30;           // minimal alignment coverage control for the read (local alignment)
     public  int reportRepeatHits = 0;       // whether report repeat hits or not
     public  int maskRepeat = 1;             // whether mask repeat or not
     public  Pattern validNt = Pattern.compile("[ACGT]");            // good Nucleotides
@@ -64,11 +65,12 @@ public class DefaultParam implements Serializable{
     public  Pattern validNtNomask = Pattern.compile("[ACGTacgt]");  // for some genomes lower case char are not repeat areas
     public  Pattern nxNomask = Pattern.compile("[NX]");             // only mask NX
     public  int bestKmers = 20;             // 4-mers q-gram filter part, Number of minimum qGrams
-    public  int bestNas = 24;               // bps 80%
+    public  int bestNas = 24;               // bps 80% correspond to 30nt of alignLength
+    public  int bestPigeon = 2;             // at least 2 kmers to form a block
     public  int maxTrys = 20;               // tries for alignment
     public  int skipThreshold = 1000;       // threshold for long reads with 2bp skip per extension
     public  int globalSignal = 0;           //
-    public  int outputformat = 0;           // text tabular format
+
     public  double eValue = 10d;                     // default evalue cutoff
     public  int chains = 0;                 // alignment for chains: 1 positive; 2 complementary; 0 Both
     public  char[] flagChains = {'+', '-'};
@@ -124,6 +126,11 @@ public class DefaultParam implements Serializable{
     public  void setKmerSize(int k){
         kmerSize = k;
         kmerBits = (1 << (kmerSize*2))-1;
+        maximumKmerNum = 1<<(kmerSize*2); // re-initial maximumKmerNum according to kmerSize
+    }
+
+    public void setKmerOverlap(int o){
+        kmerOverlap = o;
     }
 
 }

@@ -208,7 +208,7 @@ public class SparkPipe implements Serializable {
         }
 
         if (param.partitions != 0) {
-            FastqRDD.repartition(param.partitions);
+            FastqRDD = FastqRDD.repartition(param.partitions);
         }
 
         SparkBatchAlign RDDBatch = new SparkBatchAlign();

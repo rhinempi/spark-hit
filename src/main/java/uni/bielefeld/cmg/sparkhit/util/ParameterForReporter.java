@@ -43,7 +43,7 @@ public class ParameterForReporter {
     /* parameter IDs */
     private static final String
             INPUT_HIT = "input",
-            OUTPUT_REPORT = "report",
+            OUTPUT_REPORT = "outfile",
             PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
@@ -117,12 +117,12 @@ public class ParameterForReporter {
 			/* Set Object cl of CommandLine class for Parameter storage */
             CommandLine cl = parser.parse(parameter, arguments, true);
             if (cl.hasOption(HELP)) {
-                help.printHelp();
+                help.printReporterHelp();
                 System.exit(0);
             }
 
             if (cl.hasOption(HELP2)){
-                help.printHelp();
+                help.printReporterHelp();
                 System.exit(0);
             }
 

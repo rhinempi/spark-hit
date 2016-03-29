@@ -83,6 +83,10 @@ public class BatchAlignPipe implements Serializable{
             pAlign.alignLength = rInfo.readSize;
             pAlign.bestNas = (pAlign.alignLength * param.readIdentity) / 100;
             pAlign.bestKmers = pAlign.alignLength - (pAlign.alignLength - pAlign.bestNas) * 4 - 3;
+            if (param.readIdentity >= 94) {
+                pAlign.bestPigeon = pAlign.alignLength / param.kmerSize - 1 - (pAlign.alignLength - pAlign.bestNas);
+                if (pAlign.bestPigeon < 1 ) pAlign.bestPigeon = 1;
+            }
         }
 
         if (readBinaryBlock(rInfo)!=0){
@@ -118,6 +122,10 @@ public class BatchAlignPipe implements Serializable{
             pAlign.alignLength = rInfo.readSize;
             pAlign.bestNas = (pAlign.alignLength * param.readIdentity) / 100;
             pAlign.bestKmers = pAlign.alignLength - (pAlign.alignLength - pAlign.bestNas) * 4 - 3;
+            if (param.readIdentity >= 94) {   // pigeon hole value
+                pAlign.bestPigeon = pAlign.alignLength / param.kmerSize - 1 - (pAlign.alignLength - pAlign.bestNas);
+                if (pAlign.bestPigeon < 1 ) pAlign.bestPigeon = 1;
+            }
         }
 
         if (readBinaryBlock(rInfo)!=0){
@@ -227,9 +235,16 @@ public class BatchAlignPipe implements Serializable{
         if ((param.chains == 0) || (param.chains == 1)){
             getReadKmerHits(rInfo.readSize, kmerSkip);
 
-            if (pAlign.kmerHits.size() >1){
-                Collections.sort(pAlign.kmerHits);
-                getRefCandidateBlock(rInfo.readSize);
+            if (param.readIdentity >= 94){
+                if (pAlign.kmerHits.size() >= pAlign.bestPigeon){
+                    Collections.sort(pAlign.kmerHits);
+                    getRefCandidateBlockWithPigeon(rInfo.readSize);
+                }
+            }else {
+                if (pAlign.kmerHits.size() > 1) {
+                    Collections.sort(pAlign.kmerHits);
+                    getRefCandidateBlock(rInfo.readSize);
+                }
             }
 
             pAlign.kmerHits.clear();
@@ -330,10 +345,30 @@ public class BatchAlignPipe implements Serializable{
 
         if ((param.chains == 0) || (param.chains == 2)){
             getRevReadKmerHits(rInfo.readSize, kmerSkip);
+
+            if (param.readIdentity >= 94){
+                if (pAlign.kmerHits.size() >= pAlign.bestPigeon){
+                    Collections.sort(pAlign.kmerHits);
+                    getRefCandidateBlockWithPigeon(rInfo.readSize);
+                }else{
+                    pAlign.kmerHits.clear();
+                    return alignResult;
+                }
+            }else {
+                if (pAlign.kmerHits.size() > 1) {
+                    Collections.sort(pAlign.kmerHits);
+                    getRefCandidateBlock(rInfo.readSize);
+                }else{
+                    pAlign.kmerHits.clear();
+                    return alignResult;
+                }
+            }
+
             if (pAlign.kmerHits.size() >1){
                 Collections.sort(pAlign.kmerHits);
                 getRefCandidateBlock(rInfo.readSize);
             }
+
             pAlign.kmerHits.clear();
             /* merge adjacent blocks */
             mergeCandidateBlocks();
@@ -362,6 +397,7 @@ public class BatchAlignPipe implements Serializable{
                 qGram.end = mRefBlock.end;
                 qGramSort.add(qGram);
             }
+
             pAlign.mergeRefBlockList.clear();
             Collections.sort(qGramSort, new QgramComparator()); // sort all objects by their propertiy "qGrams"
             trys =0;
@@ -449,6 +485,39 @@ public class BatchAlignPipe implements Serializable{
                 currentLoc = currentLoc>=0 ? currentLoc : 0;
                 long IdAndLoc = (long)(index[kmerInteger].id[j])<<32|currentLoc;
                 pAlign.kmerHits.add(IdAndLoc);
+            }
+        }
+    }
+
+    private void getRefCandidateBlockWithPigeon(int length){
+        long fHit = pAlign.kmerHits.get(0); // resign value of firstHit(pAlign.kmerHits[0]) to another value to avoid change of pAlign
+        int markNewBlock = 0;
+        int loc, start;
+        CandidateBlock cRefBlock;
+
+        int pigeonHits = 0;
+
+        for (int i =1; i<pAlign.kmerHits.size(); i++){
+            if( (pAlign.kmerHits.get(i)-fHit) <= param.kmerSize){
+                pigeonHits++;
+                if(markNewBlock == 0 && pigeonHits >= pAlign.bestPigeon){
+                    cRefBlock = new CandidateBlock();
+                    cRefBlock.chr = (int)(fHit>>32);  //long64= int32(contigID) + int32(location)
+                    long tempLoc = fHit<<32;//long64= int32(location) + 32(0s)
+                    loc = (int)(tempLoc>>32);	//long64=32(0s) + int32(location), then to int
+                    start = loc - param.kmerSize;	// one kmer length before
+                    cRefBlock.begin = start>0 ? start : 0;
+                    cRefBlock.end = loc + length + 2*param.kmerSize;
+                    if (cRefBlock.end > (listTitle.get(cRefBlock.chr).size-1) )
+                    { cRefBlock.end = listTitle.get(cRefBlock.chr).size; }
+
+                    pAlign.cRefBlockList.add(cRefBlock);
+                    markNewBlock =1;
+                }
+            }else{
+                fHit = pAlign.kmerHits.get(i);
+                markNewBlock = 0;
+                pigeonHits = 0;
             }
         }
     }

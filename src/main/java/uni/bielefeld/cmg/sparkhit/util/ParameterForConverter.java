@@ -44,6 +44,7 @@ public class ParameterForConverter {
     private static final String
             INPUT_FASTQ = "fastq",
             OUTPUT_LINE = "outfile",
+            OUTPUT_FORMAT = "outfm",
             PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
@@ -57,6 +58,7 @@ public class ParameterForConverter {
 
         parameterMap.put(INPUT_FASTQ, o++);
         parameterMap.put(OUTPUT_LINE, o++);
+        parameterMap.put(OUTPUT_FORMAT, o++);
         parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
         parameterMap.put(HELP, o++);
@@ -72,9 +74,13 @@ public class ParameterForConverter {
                 .hasArg().withDescription("Input spark hit result file in tabular format. Accept wild card, s3n schema, hdfs schema")
                 .create(INPUT_FASTQ));
 
-        parameter.addOption(OptionBuilder.withArgName("output line file")
-                .hasArg().withDescription("Output sequencing data in line based file")
+        parameter.addOption(OptionBuilder.withArgName("output file")
+                .hasArg().withDescription("Output sequencing data directory")
                 .create(OUTPUT_LINE));
+
+        parameter.addOption(OptionBuilder.withArgName("output file format")
+                .hasArg().withDescription("Output sequencing data format: 0 line without quality, 1 line with quality, 2 fasta format")
+                .create(OUTPUT_FORMAT));
 
         parameter.addOption(OptionBuilder.withArgName("re-partition number")
                 .hasArg().withDescription("re generate number of partitions for .gz data, as .gz data only have one partition (spark parallelization)")
@@ -117,12 +123,12 @@ public class ParameterForConverter {
 			/* Set Object cl of CommandLine class for Parameter storage */
             CommandLine cl = parser.parse(parameter, arguments, true);
             if (cl.hasOption(HELP)) {
-                help.printHelp();
+                help.printConverterHelp();
                 System.exit(0);
             }
 
             if (cl.hasOption(HELP2)){
-                help.printHelp();
+                help.printConverterHelp();
                 System.exit(0);
             }
 
@@ -144,6 +150,10 @@ public class ParameterForConverter {
                 help.printConverterHelp();
                 System.exit(0);
 //                throw new IOException("Input file not specified.\nUse -help for list of options");
+            }
+
+            if ((value = cl.getOptionValue(OUTPUT_FORMAT)) != null){
+                param.outputformat = Integer.decode(value);
             }
 
 			/* not applicable for HDFS and S3 */

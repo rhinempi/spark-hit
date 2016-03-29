@@ -118,7 +118,7 @@ public class Parameter {
                 .create(OUTPUT_FILE));
 
         parameter.addOption(OptionBuilder.withArgName("kmer size")
-                .hasArg().withDescription("Kmer length for fragment recruitment")
+                .hasArg().withDescription("Kmer length for reads mapping")
                 .create(KMER_SIZE));
 
         parameter.addOption(OptionBuilder.withArgName("e-value")
@@ -138,7 +138,7 @@ public class Parameter {
                 .create(OVERLAP));
 
         parameter.addOption(OptionBuilder.withArgName("identity threshold")
-                .hasArg().withDescription("minimal identity for recruiting a read, default 75")
+                .hasArg().withDescription("minimal identity for recruiting a read, default 75 (sensitive mode, fast mode starts from 94)")
                 .create(IDENTITY));
 
         parameter.addOption(OptionBuilder.withArgName("coverage threshold")
@@ -223,15 +223,41 @@ public class Parameter {
 
             String value;
 
+            if ((value = cl.getOptionValue(IDENTITY)) != null){
+                if (Integer.decode(value) >= 0 || Integer.decode(value) <= 100){
+                    param.readIdentity = Integer.decode(value);
+                    if (param.readIdentity >= 94){
+                        param.setKmerOverlap(0);
+                        param.setKmerSize(12);
+                    }
+                }else{
+                    throw new RuntimeException("Parameter " + IDENTITY +
+                            " should not be integer of %");
+                }
+            }
+
             if ((value = cl.getOptionValue(KMER_SIZE)) != null){
                 if (Integer.decode(value) >= 8 || Integer.decode(value) <= 12){
                     param.kmerSize = Integer.decode(value);
+                    param.setKmerSize(param.kmerSize);
                 }else{
                     throw new RuntimeException("Parameter " + KMER_SIZE +
                             " should be set between 8-12");
                 }
             }
 
+            if ((value = cl.getOptionValue(OVERLAP)) != null){
+                if (Integer.decode(value) >= 0 || Integer.decode(value) <= param.kmerSize){
+                    param.kmerOverlap = Integer.decode(value);
+                }else{
+                    throw new RuntimeException("Parameter " + OVERLAP +
+                            " should not be bigger than kmer size or smaller than 0");
+                }
+            }
+
+            /**
+             * not available for now
+             */
             if ((value = cl.getOptionValue(BUILD_REF)) != null){
                 param.inputBuildPath = new File(value).getAbsolutePath();
                 param.inputFaPath = param.inputBuildPath;
@@ -270,24 +296,6 @@ public class Parameter {
                 }else{
                     throw new RuntimeException("Parameter " + UNMASK +
                         " should be set as 1 or 0");
-                }
-            }
-
-            if ((value = cl.getOptionValue(OVERLAP)) != null){
-                if (Integer.decode(value) >= 0 || Integer.decode(value) <= param.kmerSize){
-                    param.kmerOverlap = Integer.decode(value);
-                }else{
-                    throw new RuntimeException("Parameter " + OVERLAP +
-                        " should not be bigger than kmer size or smaller than 0");
-                }
-            }
-
-            if ((value = cl.getOptionValue(IDENTITY)) != null){
-                if (Integer.decode(value) >= 0 || Integer.decode(value) <= 100){
-                    param.readIdentity = Integer.decode(value);
-                }else{
-                    throw new RuntimeException("Parameter " + IDENTITY +
-                        " should not be integer of %");
                 }
             }
 
@@ -330,8 +338,6 @@ public class Parameter {
                         " should be either 0, 1 or 2");
                 }
             }
-
-
 
             if ((value = cl.getOptionValue(INPUT_FASTQ)) != null) {
                 param.inputFqPath = value;

@@ -62,7 +62,9 @@ public class SparkReportPipe implements Serializable{
 
         class HitsToPairs implements PairFunction<String, String, Integer>{
             public Tuple2<String, Integer> call(String s){
-                return new Tuple2<String, Integer>(s, 1);
+                String[] textFq = s.split("\\t");
+                int identity = (int) Double.parseDouble(textFq[7]);
+                return new Tuple2<String, Integer>(textFq[8] + "\t" + identity, 1);
             }
         }
 
@@ -78,7 +80,8 @@ public class SparkReportPipe implements Serializable{
         PairsToCount PairRDDToCount = new PairsToCount();
         JavaPairRDD<String, Integer> countsRDD = hitsPairRDD.reduceByKey(PairRDDToCount);
 
-        countsRDD.saveAsTextFile(param.outputPath);
+        JavaPairRDD<String, Integer> countsRDD1 = countsRDD.coalesce(1);
+        countsRDD1.saveAsTextFile(param.outputPath);
     }
 
     public void setParam(DefaultParam param){
