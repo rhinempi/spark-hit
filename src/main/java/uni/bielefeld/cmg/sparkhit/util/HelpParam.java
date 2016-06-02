@@ -60,7 +60,7 @@ public class HelpParam {
             }
         });
 
-        final String executable = System.getProperty("executable", "java -jar SparkHit.jar");
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.Main");
         err.println("Name:");
         err.println("\tSparkHit main");
         err.println();
@@ -85,7 +85,7 @@ public class HelpParam {
             }
         });
 
-        final String executable = System.getProperty("executable", "java -jar SparkHit.jar");
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfConverter Sparkhit.jar");
         err.println("Name:");
         err.println("\tSparkHit converter");
         err.println();
@@ -107,7 +107,7 @@ public class HelpParam {
             }
         });
 
-        final String executable = System.getProperty("executable", "java -jar SparkHit.jar");
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfReporter Sparkhit.jar");
         err.println("Name:");
         err.println("\tSparkHit reporter");
         err.println();
@@ -117,6 +117,28 @@ public class HelpParam {
         err.println("Usage:");
         err.println("\tReport coverage");
         err.println(executable + " [parameters] -input ./sparkhit.out -outfile ./sparkhit.report");
+        err.println();
+    }
+
+    public void printScriptPiperHelp(){
+        HelpFormatter formatter =new HelpFormatter();
+        formatter.setOptionComparator(new Comparator<Option>(){
+            public int compare(Option o1, Option o2){
+                return Integer.compare(parameterMap.get(o1.getOpt()),
+                        parameterMap.get(o2.getOpt()));
+            }
+        });
+
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfPiper Sparkhit.jar");
+        err.println("Name:");
+        err.println("\tSparkHit ScriptPiper (bwa, bowtie2 or other aligner)");
+        err.println();
+        err.println("Options:");
+        formatter.printOptions(new PrintWriter(err, true), 85, parameter, 2, 3); /* print formatted parameters */
+        err.println();
+        err.println("Usage:");
+        err.println("\tSequence mapping using external tools like bwa mem:");
+        err.println(executable + " [parameters] -fastq query.fq.tar.bz2 -outfile ./outbams_dir -tool \"/mypath/bwa mem\" -toolparam \"/mypath/reference.fa -t 32\"");
         err.println();
     }
 

@@ -12,9 +12,11 @@ import scala.Tuple2;
 import scala.Tuple3;
 import scala.annotation.meta.param;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
+import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Liren Huang on 17/03/16.
@@ -41,6 +43,7 @@ import java.util.List;
 
 public class SparkReportPipe implements Serializable{
     private DefaultParam param;
+    private InfoDumper info = new InfoDumper();
 
     private SparkConf setSparkConfiguration(){
         SparkConf conf = new SparkConf().setAppName("SparkHit");
@@ -52,6 +55,10 @@ public class SparkReportPipe implements Serializable{
 
     public void spark() {
         SparkConf conf = setSparkConfiguration();
+        info.readMessage("Initiating Spark context ...");
+        info.screenDump();
+        info.readMessage("Start Spark framework");
+        info.screenDump();
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> hitsRDD = sc.textFile(param.inputResultPath); // not a fastq file any more

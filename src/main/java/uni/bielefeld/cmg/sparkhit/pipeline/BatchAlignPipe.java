@@ -148,6 +148,7 @@ public class BatchAlignPipe implements Serializable{
         /* positive strain */
         for (i=0; i < rInfo.readSize; i++ ){
             char currentNt = rInfo.read.charAt(i);
+            if (currentNt >=256) currentNt = 255;
 
             bInteger<<=2;
             bInteger|=param.alphaCode[currentNt];
@@ -362,11 +363,6 @@ public class BatchAlignPipe implements Serializable{
                     pAlign.kmerHits.clear();
                     return alignResult;
                 }
-            }
-
-            if (pAlign.kmerHits.size() >1){
-                Collections.sort(pAlign.kmerHits);
-                getRefCandidateBlock(rInfo.readSize);
             }
 
             pAlign.kmerHits.clear();

@@ -222,6 +222,10 @@ public class SparkPipe implements Serializable {
      */
     public void spark(){
         SparkConf conf = setSparkConfiguration();
+        info.readMessage("Initiating Spark context ...");
+        info.screenDump();
+        info.readMessage("Start Spark framework");
+        info.screenDump();
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> FastqRDD = sc.textFile(param.inputFqPath);

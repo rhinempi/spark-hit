@@ -64,7 +64,7 @@ public class ReadInfo implements Serializable {
     }
 
     public void logInfo(){
-        String[] textFq = line.split("\t");
+        String[] textFq = line.split("\\t");
         name(textFq[0]);
         seq(textFq[1]);
         size(read);

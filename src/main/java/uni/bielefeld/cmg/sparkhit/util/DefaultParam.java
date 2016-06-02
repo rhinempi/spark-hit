@@ -42,6 +42,12 @@ public class DefaultParam implements Serializable{
     public String inputFqLinePath;  // input query file, one line per unit
     public String inputFaPath; // input reference file, used by main program
 
+    public String toolDepend = " "; // external tool dependencies such as sh, perl, java package
+    public String tool;  // external tool such as bwa mem, bowtie2
+    public String toolParam = " ";  // external tool parameter for your tool
+    public boolean filterFastq = false;
+    public boolean filterToFasta = false;
+
     public String outputPath;  // used by all
 
     public int threads = 1;
