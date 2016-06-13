@@ -289,6 +289,30 @@ public class Pipelines implements Pipeline, Serializable{
         sPPipe.spark();
     }
 
+    public void sparkVariantCaller(){
+        SparkBamPipe sBPipe = new SparkBamPipe();
+        sBPipe.setParam(param);
+        sBPipe.spark();
+    }
+
+    public void sparkParallelizer(){
+        SparkParallelPipe sPPipe = new SparkParallelPipe();
+        sPPipe.setParam(param);
+        sPPipe.spark();
+    }
+
+    public void sparkReductioner(){
+        SparkReductionPipe sRPipe = new SparkReductionPipe();
+        sRPipe.setParam(param);
+        sRPipe.spark();
+    }
+
+    public void sparkStatisticer(){
+        SparkHWEPipe sHPipe = new SparkHWEPipe();
+        sHPipe.setParam(param);
+        sHPipe.spark();
+    }
+
     public void setFastqUnitBuffer(FastqUnitBuffer inputFastqUnitBuffer){
         this.inputFastqUnitBuffer = inputFastqUnitBuffer;
     }

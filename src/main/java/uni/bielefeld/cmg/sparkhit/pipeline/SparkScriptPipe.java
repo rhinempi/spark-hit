@@ -122,14 +122,32 @@ public class SparkScriptPipe implements Serializable{
             }
         }
 
-        if (param.inputFqLinePath != null) {      // line to fastq
+        class LineFilterToFasta implements Function<String, String>, Serializable{
+            public String call(String s){
+                String[] fourMusketeers = s.split("\\t");
+                if (fourMusketeers[1]!=null) {
+                    String unit = ">" + fourMusketeers[0] + "\n" + fourMusketeers[1];
+                    return unit;
+                }else{
+                    return null;
+                }
+            }
+        }
+
+        if (param.inputFqLinePath != null && param.lineToFasta == false) {      // line to fastq
             LineToFastq RDDLineToFastq = new LineToFastq();
             FastqRDD = FastqRDD.map(RDDLineToFastq);
         }
 
-        if (param.filterFastq == true){ // filter fastq
+        if (param.lineToFasta == true){
+            LineFilterToFasta RDDLineToFasta = new LineFilterToFasta();
+            FastqRDD = FastqRDD.map(RDDLineToFasta);
+        }
+
+        if (param.filterFastq == true){
             FastqFilterWithQual RDDConcatQ = new FastqFilterWithQual();
             FastqRDD = FastqRDD.map(RDDConcatQ);
+
             FastqFilter RDDFilter = new FastqFilter();
             FastqRDD = FastqRDD.filter(RDDFilter);
         }
@@ -143,7 +161,9 @@ public class SparkScriptPipe implements Serializable{
             FastqRDD = FastqRDD.repartition(param.partitions);
         }
 
-        String command = param.toolDepend + " " + param.tool + " " + param.toolParam;
+        String command = param.toolDepend + " " + param.tool + " \"" + param.toolParam + "\"";
+        info.readMessage(command);
+        info.screenDump();
 
         FastqRDD = FastqRDD.pipe(command);
 

@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterForScriptPiper {
+public class ParameterForVariantCaller {
     private String[] arguments;
     private InfoDumper info = new InfoDumper();
 
-    public ParameterForScriptPiper(String[] arguments) throws IOException, ParseException {
+    public ParameterForVariantCaller(String[] arguments) throws IOException, ParseException {
         this.arguments = arguments;
     }
 
@@ -42,11 +42,7 @@ public class ParameterForScriptPiper {
 
     /* parameter IDs */
     private static final String
-            INPUT_FASTQ = "fastq",
-            INPUT_LINE = "line",
-            FASTQ_FILTER = "filter",
-            FASTA_CONVERT = "tofasta",
-            LINE_FASTA = "linetofa",
+            INPUT_LIST = "list",
             INPUT_TOOL = "tool",
             TOOL_PARAM = "toolparam",
             TOOL_DEPEND = "tooldepend",
@@ -62,11 +58,7 @@ public class ParameterForScriptPiper {
     public void putParameterID(){
         int o =0;
 
-        parameterMap.put(INPUT_FASTQ, o++);
-        parameterMap.put(INPUT_LINE, o++);
-        parameterMap.put(FASTQ_FILTER, o++);
-        parameterMap.put(FASTA_CONVERT, o++);
-        parameterMap.put(LINE_FASTA, o++);
+        parameterMap.put(INPUT_LIST, o++);
         parameterMap.put(INPUT_TOOL, o++);
         parameterMap.put(TOOL_PARAM, o++);
         parameterMap.put(TOOL_DEPEND, o++);
@@ -82,25 +74,9 @@ public class ParameterForScriptPiper {
 
 		/* use Object parameter of Options class to store parameter information */
 
-        parameter.addOption(OptionBuilder.withArgName("input fastq file")
-                .hasArg().withDescription("Input spark hit result file in tabular format. Accept wild card, s3n schema, hdfs schema")
-                .create(INPUT_FASTQ));
-
-        parameter.addOption(OptionBuilder.withArgName("input line file")
-                .hasArg().withDescription("Input NGS data, line based text file format, one line per unit")
-                .create(INPUT_LINE));
-
-        parameter.addOption(OptionBuilder.withArgName("filter input fastq")
-                .hasArg(false).withDescription("Weather to filter input fastq file or not, default not (big data with small error, who knows)")
-                .create(FASTQ_FILTER));
-
-        parameter.addOption(OptionBuilder.withArgName("convert to fasta")
-                .hasArg(false).withDescription("Convert input fastq file to fasta before sending to external tool to process")
-                .create(FASTA_CONVERT));
-
-        parameter.addOption(OptionBuilder.withArgName("line to fasta")
-                .hasArg(false).withDescription("Convert input line file to fasta before sending to external tool to process")
-                .create(LINE_FASTA));
+        parameter.addOption(OptionBuilder.withArgName("input bamfile list")
+                .hasArg().withDescription("Input list file of HDFS (with hdfs schema) bam file path, one file per line")
+                .create(INPUT_LIST));
 
         parameter.addOption(OptionBuilder.withArgName("tool dependencies")
                 .hasArg().withDescription("Use \"\" quotation to quote Dependencies for your tool. Or instead, put it in tool path in commandline logic. Default is NONE")
@@ -180,11 +156,8 @@ public class ParameterForScriptPiper {
                 param.partitions = Integer.decode(value);
             }
 
-            if ((value = cl.getOptionValue(INPUT_FASTQ)) != null) {
-                param.inputFqPath = value;
-            }else if ((value = cl.getOptionValue(INPUT_LINE)) != null) {
-                param.inputFqLinePath = value;
-                param.inputFqPath = value;
+            if ((value = cl.getOptionValue(INPUT_LIST)) != null) {
+                param.inputList = value;
             }else {
                 help.printScriptPiperHelp();
                 System.exit(0);
@@ -214,18 +187,6 @@ public class ParameterForScriptPiper {
                 info.readParagraphedMessages("Output file : \n\t" + param.outputPath + "\nalready exists, will be overwrite.");
                 info.screenDump();
                 Runtime.getRuntime().exec("rm -rf " + param.outputPath);
-            }
-
-            if (cl.hasOption(FASTQ_FILTER)){
-                param.filterFastq = true;
-            }
-
-            if (cl.hasOption(FASTA_CONVERT)){
-                param.filterToFasta = true;
-            }
-
-            if (cl.hasOption(LINE_FASTA)){
-                param.lineToFasta = true;
             }
 
             if ((value = cl.getOptionValue(INPUT_TOOL)) != null){

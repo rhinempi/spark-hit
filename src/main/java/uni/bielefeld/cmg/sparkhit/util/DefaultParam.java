@@ -47,6 +47,10 @@ public class DefaultParam implements Serializable{
     public String toolParam = " ";  // external tool parameter for your tool
     public boolean filterFastq = false;
     public boolean filterToFasta = false;
+    public boolean lineToFasta = false;
+
+    public String inputList;
+    public int inputNodes;
 
     public String outputPath;  // used by all
 

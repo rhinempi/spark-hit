@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterForScriptPiper {
+public class ParameterForReductioner {
     private String[] arguments;
     private InfoDumper info = new InfoDumper();
 
-    public ParameterForScriptPiper(String[] arguments) throws IOException, ParseException {
+    public ParameterForReductioner(String[] arguments) throws IOException, ParseException {
         this.arguments = arguments;
     }
 
@@ -42,14 +42,7 @@ public class ParameterForScriptPiper {
 
     /* parameter IDs */
     private static final String
-            INPUT_FASTQ = "fastq",
-            INPUT_LINE = "line",
-            FASTQ_FILTER = "filter",
-            FASTA_CONVERT = "tofasta",
-            LINE_FASTA = "linetofa",
-            INPUT_TOOL = "tool",
-            TOOL_PARAM = "toolparam",
-            TOOL_DEPEND = "tooldepend",
+            INPUT_VCF = "vcf",
             OUTPUT_LINE = "outfile",
             PARTITIONS = "partition",
             VERSION = "version",
@@ -62,14 +55,7 @@ public class ParameterForScriptPiper {
     public void putParameterID(){
         int o =0;
 
-        parameterMap.put(INPUT_FASTQ, o++);
-        parameterMap.put(INPUT_LINE, o++);
-        parameterMap.put(FASTQ_FILTER, o++);
-        parameterMap.put(FASTA_CONVERT, o++);
-        parameterMap.put(LINE_FASTA, o++);
-        parameterMap.put(INPUT_TOOL, o++);
-        parameterMap.put(TOOL_PARAM, o++);
-        parameterMap.put(TOOL_DEPEND, o++);
+        parameterMap.put(INPUT_VCF, o++);
         parameterMap.put(OUTPUT_LINE, o++);
         parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
@@ -82,40 +68,12 @@ public class ParameterForScriptPiper {
 
 		/* use Object parameter of Options class to store parameter information */
 
-        parameter.addOption(OptionBuilder.withArgName("input fastq file")
-                .hasArg().withDescription("Input spark hit result file in tabular format. Accept wild card, s3n schema, hdfs schema")
-                .create(INPUT_FASTQ));
-
-        parameter.addOption(OptionBuilder.withArgName("input line file")
-                .hasArg().withDescription("Input NGS data, line based text file format, one line per unit")
-                .create(INPUT_LINE));
-
-        parameter.addOption(OptionBuilder.withArgName("filter input fastq")
-                .hasArg(false).withDescription("Weather to filter input fastq file or not, default not (big data with small error, who knows)")
-                .create(FASTQ_FILTER));
-
-        parameter.addOption(OptionBuilder.withArgName("convert to fasta")
-                .hasArg(false).withDescription("Convert input fastq file to fasta before sending to external tool to process")
-                .create(FASTA_CONVERT));
-
-        parameter.addOption(OptionBuilder.withArgName("line to fasta")
-                .hasArg(false).withDescription("Convert input line file to fasta before sending to external tool to process")
-                .create(LINE_FASTA));
-
-        parameter.addOption(OptionBuilder.withArgName("tool dependencies")
-                .hasArg().withDescription("Use \"\" quotation to quote Dependencies for your tool. Or instead, put it in tool path in commandline logic. Default is NONE")
-                .create(TOOL_DEPEND));
-
-        parameter.addOption(OptionBuilder.withArgName("external tool path")
-                .hasArg().withDescription("Path to an external tool you want to use, a script or a tool")
-                .create(INPUT_TOOL));
-
-        parameter.addOption(OptionBuilder.withArgName("external tool param")
-                .hasArg().withDescription("Use \"\" quotation to quote Parameter for your tool, please exclude input and output for your tool as it should be STDIN and STDOUT for Spark Pipe. Please include reference and place it in the right position in your command line")
-                .create(TOOL_PARAM));
+        parameter.addOption(OptionBuilder.withArgName("input VCF file")
+                .hasArg().withDescription("Input vcf file containing variation info")
+                .create(INPUT_VCF));
 
         parameter.addOption(OptionBuilder.withArgName("output file")
-                .hasArg().withDescription("Output sequencing data directory")
+                .hasArg().withDescription("Output major components file")
                 .create(OUTPUT_LINE));
 
         parameter.addOption(OptionBuilder.withArgName("re-partition num")
@@ -180,10 +138,7 @@ public class ParameterForScriptPiper {
                 param.partitions = Integer.decode(value);
             }
 
-            if ((value = cl.getOptionValue(INPUT_FASTQ)) != null) {
-                param.inputFqPath = value;
-            }else if ((value = cl.getOptionValue(INPUT_LINE)) != null) {
-                param.inputFqLinePath = value;
+            if ((value = cl.getOptionValue(INPUT_VCF)) != null) {
                 param.inputFqPath = value;
             }else {
                 help.printScriptPiperHelp();
@@ -216,51 +171,6 @@ public class ParameterForScriptPiper {
                 Runtime.getRuntime().exec("rm -rf " + param.outputPath);
             }
 
-            if (cl.hasOption(FASTQ_FILTER)){
-                param.filterFastq = true;
-            }
-
-            if (cl.hasOption(FASTA_CONVERT)){
-                param.filterToFasta = true;
-            }
-
-            if (cl.hasOption(LINE_FASTA)){
-                param.lineToFasta = true;
-            }
-
-            if ((value = cl.getOptionValue(INPUT_TOOL)) != null){
-                param.tool = value.replaceAll("\"","");
-                info.readParagraphedMessages("External tool locate at : \n\t" + param.tool + "\nplease ensure that all nodes have such tools in the same path.\nOr it is located in a shared file system.\nOr use a Docker container");
-                info.screenDump();
-            }else{
-                help.printScriptPiperHelp();
-                info.readMessage("External tool path have not been set with parameter -tool");
-                info.screenDump();
-                System.exit(0);
-            }
-
-            if ((value = cl.getOptionValue(TOOL_DEPEND)) != null){
-                param.toolDepend= value.replaceAll("\"","");
-                info.readParagraphedMessages("External tool Dependencies : \n\t" + param.toolDepend + "\n" );
-                info.screenDump();
-            }else{
-                info.readMessage("External tool dependencies have not been set, will run with tool build-in Interpreter");
-                info.screenDump();
-            }
-
-            if ((value = cl.getOptionValue(TOOL_PARAM)) != null){
-                param.toolParam= value.replaceAll("\"","");
-                info.readParagraphedMessages("External tool parameter : \n\t" + param.toolParam + "\nThe entire command looks like : \n\t" + param.toolDepend + " " + param.tool + " " + param.toolParam );
-                info.screenDump();
-                info.readParagraphedMessages("Final external command is : \n\t" + param.toolDepend + " " + param.tool + " " + param.toolParam);
-                info.screenDump();
-            }else{
-                info.readMessage("External tool parameter have not been set, will run with its default parameter");
-                info.screenDump();
-            }
-
-           // param.bestNas = (param.alignLength * param.readIdentity) / 100;
-           // param.bestKmers = param.alignLength - (param.alignLength - param.bestNas) * 4 - 3;
 
         } catch (IOException e) { // Don`t catch this, NaNaNaNa, U can`t touch this.
             info.readMessage("Parameter settings incorrect.");

@@ -1,7 +1,6 @@
 package uni.bielefeld.cmg.sparkhit.pipeline;
 
 
-import scala.Char;
 import uni.bielefeld.cmg.sparkhit.algorithm.Arithmetic;
 import uni.bielefeld.cmg.sparkhit.io.readInfo;
 import uni.bielefeld.cmg.sparkhit.matrix.ScoreMatrix;
@@ -10,8 +9,6 @@ import uni.bielefeld.cmg.sparkhit.struct.*;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
