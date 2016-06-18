@@ -33,7 +33,7 @@ import java.io.Serializable;
  */
 
 
-public class SparkScriptPipe implements Serializable{
+public class SparkDecompressPipe implements Serializable{
     private DefaultParam param;
     private InfoDumper info = new InfoDumper();
 
@@ -165,12 +165,6 @@ public class SparkScriptPipe implements Serializable{
             FastqRDD = FastqRDD.repartition(param.partitions);
         }
 
-        param.toolParam.trim();
-        String command = param.toolDepend + " " + param.tool + " \"" + param.toolParam + "\"";
-        info.readMessage(command);
-        info.screenDump();
-
-        FastqRDD = FastqRDD.pipe(command);
 
         FastqRDD.saveAsTextFile(param.outputPath);
 

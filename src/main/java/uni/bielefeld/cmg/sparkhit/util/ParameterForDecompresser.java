@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterForReductioner {
+public class ParameterForDecompresser {
     private String[] arguments;
     private InfoDumper info = new InfoDumper();
 
-    public ParameterForReductioner(String[] arguments) throws IOException, ParseException {
+    public ParameterForDecompresser(String[] arguments) throws IOException, ParseException {
         this.arguments = arguments;
     }
 
@@ -42,9 +42,12 @@ public class ParameterForReductioner {
 
     /* parameter IDs */
     private static final String
-            INPUT_VCF = "vcf",
+            INPUT_FASTQ = "fastq",
+            INPUT_LINE = "line",
+            FASTQ_FILTER = "filter",
+            FASTA_CONVERT = "tofasta",
+            LINE_FASTA = "linetofa",
             OUTPUT_LINE = "outfile",
-            WINDOW = "window",
             PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
@@ -56,9 +59,12 @@ public class ParameterForReductioner {
     public void putParameterID(){
         int o =0;
 
-        parameterMap.put(INPUT_VCF, o++);
+        parameterMap.put(INPUT_FASTQ, o++);
+        parameterMap.put(INPUT_LINE, o++);
+        parameterMap.put(FASTQ_FILTER, o++);
+        parameterMap.put(FASTA_CONVERT, o++);
+        parameterMap.put(LINE_FASTA, o++);
         parameterMap.put(OUTPUT_LINE, o++);
-        parameterMap.put(WINDOW, o++);
         parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
         parameterMap.put(HELP, o++);
@@ -70,17 +76,29 @@ public class ParameterForReductioner {
 
 		/* use Object parameter of Options class to store parameter information */
 
-        parameter.addOption(OptionBuilder.withArgName("input VCF file")
-                .hasArg().withDescription("Input vcf file containing variation info")
-                .create(INPUT_VCF));
+        parameter.addOption(OptionBuilder.withArgName("input compressed fastq file")
+                .hasArg().withDescription("Input compressed fastq file. Accept wild card, s3n schema, hdfs schema")
+                .create(INPUT_FASTQ));
+
+        parameter.addOption(OptionBuilder.withArgName("input compressed line file")
+                .hasArg().withDescription("Input compressed line file format, one line per unit")
+                .create(INPUT_LINE));
+
+        parameter.addOption(OptionBuilder.withArgName("filter input fastq")
+                .hasArg(false).withDescription("Weather to filter input fastq file or not, default not (big data with small error, who knows)")
+                .create(FASTQ_FILTER));
+
+        parameter.addOption(OptionBuilder.withArgName("convert to fasta")
+                .hasArg(false).withDescription("Convert input fastq file to fasta before sending to external tool to process")
+                .create(FASTA_CONVERT));
+
+        parameter.addOption(OptionBuilder.withArgName("line to fasta")
+                .hasArg(false).withDescription("Convert input line file to fasta before sending to external tool to process")
+                .create(LINE_FASTA));
 
         parameter.addOption(OptionBuilder.withArgName("output file")
-                .hasArg().withDescription("Output major components file")
+                .hasArg().withDescription("Output sequencing data directory")
                 .create(OUTPUT_LINE));
-
-        parameter.addOption(OptionBuilder.withArgName("SNP window size")
-                .hasArg().withDescription("window size for a block of snps")
-                .create(WINDOW));
 
         parameter.addOption(OptionBuilder.withArgName("re-partition num")
                 .hasArg().withDescription("even the load of each task, 1 partition for a task or 4 partitions for a task is recommended. Default, not re-partition")
@@ -144,11 +162,10 @@ public class ParameterForReductioner {
                 param.partitions = Integer.decode(value);
             }
 
-            if ((value = cl.getOptionValue(WINDOW)) != null){
-                param.window = Integer.decode(value);
-            }
-
-            if ((value = cl.getOptionValue(INPUT_VCF)) != null) {
+            if ((value = cl.getOptionValue(INPUT_FASTQ)) != null) {
+                param.inputFqPath = value;
+            }else if ((value = cl.getOptionValue(INPUT_LINE)) != null) {
+                param.inputFqLinePath = value;
                 param.inputFqPath = value;
             }else {
                 help.printScriptPiperHelp();
@@ -181,6 +198,20 @@ public class ParameterForReductioner {
                 Runtime.getRuntime().exec("rm -rf " + param.outputPath);
             }
 
+            if (cl.hasOption(FASTQ_FILTER)){
+                param.filterFastq = true;
+            }
+
+            if (cl.hasOption(FASTA_CONVERT)){
+                param.filterToFasta = true;
+            }
+
+            if (cl.hasOption(LINE_FASTA)){
+                param.lineToFasta = true;
+            }
+
+           // param.bestNas = (param.alignLength * param.readIdentity) / 100;
+           // param.bestKmers = param.alignLength - (param.alignLength - param.bestNas) * 4 - 3;
 
         } catch (IOException e) { // Don`t catch this, NaNaNaNa, U can`t touch this.
             info.readMessage("Parameter settings incorrect.");

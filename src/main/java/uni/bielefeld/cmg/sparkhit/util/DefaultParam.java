@@ -49,6 +49,8 @@ public class DefaultParam implements Serializable{
     public boolean filterToFasta = false;
     public boolean lineToFasta = false;
 
+    public int window=10000;
+
     public String inputList;
     public int inputNodes;
 
