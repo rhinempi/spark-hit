@@ -100,6 +100,8 @@ public class SparkHWEPipe implements Serializable{
             vcfRDD = vcfRDD.repartition(param.partitions);
         }
 
+        vcfRDD.cache();
+
         VariantToPValue toPValue = new VariantToPValue();
         JavaRDD<String> pValueRDD = vcfRDD.map(toPValue);
 

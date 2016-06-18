@@ -109,8 +109,80 @@ public class SparkReductionPipe implements Serializable{
             }
         }
 
-        PartitionIterator VCFToVectorRDD = new PartitionIterator();
-        JavaRDD<Vector> ListRDD = vcfRDD.mapPartitions(VCFToVectorRDD);
+        class PartitionIteratorBlock implements FlatMapFunction<Iterator<String>, Vector> {
+            public Iterable<Vector> call(Iterator<String> input) {
+
+                ArrayList<ArrayList<Integer>> snps = new ArrayList<ArrayList<Integer>>();
+                ArrayList<Vector> snpsVector = new ArrayList<Vector>();
+                int lineMark=0;
+                int p2 = 0, pq = 0, q2 = 0;
+
+                for (int i = 0 ; i < 1000; i++){
+                    snps.add(new ArrayList<Integer>());
+                }
+
+                while (input.hasNext()) {
+                    String line = input.next();
+                    if (line.startsWith("#")) {
+                        line = input.next();
+                    }
+
+                    String[] array = line.split("\\t");
+
+                    lineMark++;
+
+                    if (array.length <= 9) {
+                        continue;
+                    }
+
+                    if (lineMark % param.window == 0){p2 = 0; pq = 0; q2 = 0;}
+
+                    for (int i = 9; i < 9 + 1000; i++) {
+                        if (array[i].equals("0|0")) {
+                            p2++;
+                        } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
+                            pq++;
+                        } else if (array[i].equals("1|1")) {
+                            q2++;
+                        }
+
+                        if (lineMark % param.window == 0) {
+                            snps.get(i - 9).add(p2);
+                            snps.get(i - 9).add(pq);
+                            snps.get(i - 9).add(q2);
+                        }
+
+                    }
+
+                }
+
+                /* add last block */
+                for (int i = 9; i < 9 + 1000; i++) {
+                        snps.get(i - 9).add(p2);
+                        snps.get(i - 9).add(pq);
+                        snps.get(i - 9).add(q2);
+                }
+
+                for (int i = 0; i < 1000; i++){
+                    double[] vector = new double[snps.get(i).size()];
+                    for (int j=0; j< snps.get(i).size(); j++){
+                        vector[j] = (double)(snps.get(i).get(j));
+                    }
+                    snpsVector.add(Vectors.dense(vector));
+                }
+
+                return snpsVector;
+            }
+        }
+
+        JavaRDD<Vector> ListRDD;
+        if (param.window == 0) {
+            PartitionIterator VCFToVectorRDD = new PartitionIterator();
+            ListRDD = vcfRDD.mapPartitions(VCFToVectorRDD);
+        }else{
+            PartitionIteratorBlock VCFToVectorBlockRDD = new PartitionIteratorBlock();
+            ListRDD = vcfRDD.mapPartitions(VCFToVectorBlockRDD);
+        }
 
         if (param.partitions != 0) {
             ListRDD = ListRDD.repartition(param.partitions);

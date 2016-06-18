@@ -313,6 +313,12 @@ public class Pipelines implements Pipeline, Serializable{
         sHPipe.spark();
     }
 
+    public void sparkDecompresser(){
+        SparkDecompressPipe sDPipe = new SparkDecompressPipe();
+        sDPipe.setParam(param);
+        sDPipe.spark();
+    }
+
     public void setFastqUnitBuffer(FastqUnitBuffer inputFastqUnitBuffer){
         this.inputFastqUnitBuffer = inputFastqUnitBuffer;
     }

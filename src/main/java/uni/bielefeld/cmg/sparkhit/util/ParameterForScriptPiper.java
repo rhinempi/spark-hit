@@ -229,7 +229,7 @@ public class ParameterForScriptPiper {
             }
 
             if ((value = cl.getOptionValue(INPUT_TOOL)) != null){
-                param.tool = value.replaceAll("\"","");
+                param.tool = value;
                 info.readParagraphedMessages("External tool locate at : \n\t" + param.tool + "\nplease ensure that all nodes have such tools in the same path.\nOr it is located in a shared file system.\nOr use a Docker container");
                 info.screenDump();
             }else{
@@ -240,7 +240,7 @@ public class ParameterForScriptPiper {
             }
 
             if ((value = cl.getOptionValue(TOOL_DEPEND)) != null){
-                param.toolDepend= value.replaceAll("\"","");
+                param.toolDepend= value;
                 info.readParagraphedMessages("External tool Dependencies : \n\t" + param.toolDepend + "\n" );
                 info.screenDump();
             }else{
@@ -249,7 +249,7 @@ public class ParameterForScriptPiper {
             }
 
             if ((value = cl.getOptionValue(TOOL_PARAM)) != null){
-                param.toolParam= value.replaceAll("\"","");
+                param.toolParam= value;
                 info.readParagraphedMessages("External tool parameter : \n\t" + param.toolParam + "\nThe entire command looks like : \n\t" + param.toolDepend + " " + param.tool + " " + param.toolParam );
                 info.screenDump();
                 info.readParagraphedMessages("Final external command is : \n\t" + param.toolDepend + " " + param.tool + " " + param.toolParam);
