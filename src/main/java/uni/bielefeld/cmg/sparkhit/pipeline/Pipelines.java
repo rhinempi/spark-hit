@@ -274,7 +274,11 @@ public class Pipelines implements Pipeline, Serializable{
     public void sparkReporter(){
         SparkReportPipe sRPipe = new SparkReportPipe();
         sRPipe.setParam(param);
-        sRPipe.spark();
+        if (param.word == null) {
+            sRPipe.spark();
+        }else{
+            sRPipe.sparkSpecific();
+        }
     }
 
     public void sparkConverter(){

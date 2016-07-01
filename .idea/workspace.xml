@@ -2,17 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ea1a6ca-db7b-451b-9c45-043e222c5585" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfDecompresser.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkDecompressPipe.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForDecompresser.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/Pipelines.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/Pipelines.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkHWEPipe.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkHWEPipe.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReductionPipe.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReductionPipe.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReportPipe.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReportPipe.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkScriptPipe.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkScriptPipe.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/DefaultParam.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/DefaultParam.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReductioner.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReductioner.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForScriptPiper.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForScriptPiper.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReporter.java" afterPath="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReporter.java" />
     </list>
     <ignored path="spark-hit.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,68 +35,46 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="185" column="0" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SparkPipe.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkPipe.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="272" column="42" selection-start-line="272" selection-start-column="42" selection-end-line="272" selection-end-column="42" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SparkScriptPipe.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="SparkScriptPipe.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkScriptPipe.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="128" column="46" selection-start-line="128" selection-start-column="46" selection-end-line="128" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.9832215">
+              <caret line="161" column="0" selection-start-line="161" selection-start-column="0" selection-end-line="161" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SparkDecompressPipe.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkDecompressPipe.java">
+      <file leaf-file-name="SparkReportPipe.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReportPipe.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="168" column="17" selection-start-line="168" selection-start-column="17" selection-end-line="168" selection-end-column="17" />
+              <caret line="128" column="9" selection-start-line="128" selection-start-column="9" selection-end-line="128" selection-end-column="9" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ParameterForDecompresser.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForDecompresser.java">
+      <file leaf-file-name="ParameterForReporter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReporter.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="88" column="39" selection-start-line="88" selection-start-column="39" selection-end-line="88" selection-end-column="39" />
+              <caret line="176" column="56" selection-start-line="176" selection-start-column="43" selection-end-line="176" selection-end-column="56" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainOfDecompresser.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfDecompresser.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.40604028">
-              <caret line="38" column="59" selection-start-line="38" selection-start-column="59" selection-end-line="38" selection-end-column="59" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Pipelines.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/Pipelines.java">
+      <file leaf-file-name="ParameterForScriptPiper.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForScriptPiper.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="322" column="23" selection-start-line="322" selection-start-column="23" selection-end-line="322" selection-end-column="23" />
+              <caret line="222" column="42" selection-start-line="222" selection-start-column="42" selection-end-line="222" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -146,7 +119,6 @@
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfReporter.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfConverter.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/Main.java" />
-        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReporter.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForConverter.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/struct/AlignmentParameter.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/Parameter.java" />
@@ -155,7 +127,6 @@
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkPipeExternalTools.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkPipe.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkPiperPipe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReportPipe.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForPiper.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfPiper.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/HelpParam.java" />
@@ -175,15 +146,17 @@
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForStatisticer.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfStatisticer.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkHWEPipe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/DefaultParam.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReductionPipe.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReductioner.java" />
-        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForScriptPiper.java" />
-        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkScriptPipe.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkDecompressPipe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/Pipelines.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfDecompresser.java" />
         <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForDecompresser.java" />
+        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForScriptPiper.java" />
+        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkScriptPipe.java" />
+        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/DefaultParam.java" />
+        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReportPipe.java" />
+        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/Pipelines.java" />
+        <option value="$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReporter.java" />
       </list>
     </option>
   </component>
@@ -346,6 +319,21 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spark-hit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spark-hit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -480,81 +468,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="pipeline" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spark-hit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spark-hit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sparkhit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spark-hit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spark-hit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sparkhit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="algorithm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scratches" />
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spark-hit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spark-hit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -989,7 +902,13 @@
       <option name="project" value="LOCAL" />
       <updated>1465805387847</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="0.7 version 1nd commit&#10;add pigeon hole principle for fast alignment&#10;add bwa&#10;add bowtie2&#10;add fr-hit&#10;add fr-hit-pigeon&#10;add kraken">
+      <created>1466231637759</created>
+      <option name="number" value="00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1466231637759</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TodoView">
@@ -1008,12 +927,12 @@
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32747602" sideWeight="0.49676898" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3253205" sideWeight="0.503231" order="10" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32875606" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32371795" sideWeight="0.503231" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32803813" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3253205" sideWeight="0.49353796" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32692307" sideWeight="0.49676898" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.273021" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.273021" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24958949" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1023,7 +942,7 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30448717" sideWeight="0.49676898" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3035144" sideWeight="0.49676898" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32852563" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1135,13 +1054,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReporter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.025167786">
-          <caret line="157" column="37" selection-start-line="157" selection-start-column="37" selection-end-line="157" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/struct/AlignmentParameter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.1442953">
@@ -1170,13 +1082,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkConvertPipe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44630873">
-          <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/Parameter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1202,27 +1107,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.57885903">
           <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForConverter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.2768457">
-          <caret line="136" column="13" selection-start-line="136" selection-start-column="13" selection-end-line="136" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForVariantCaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.037128713">
-          <caret line="212" column="56" selection-start-line="212" selection-start-column="56" selection-end-line="212" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReportPipe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8238255">
-          <caret line="96" column="0" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1261,13 +1145,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfConverter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="55" column="4" selection-start-line="55" selection-start-column="4" selection-end-line="55" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfParallelizer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1303,13 +1180,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkParallelPipe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="56" column="21" selection-start-line="56" selection-start-column="21" selection-end-line="56" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfStatisticer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1338,13 +1208,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkHWEPipe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="59" column="22" selection-start-line="59" selection-start-column="22" selection-end-line="59" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReductioner.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1352,17 +1215,64 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForScriptPiper.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfDecompresser.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="254" column="51" selection-start-line="254" selection-start-column="46" selection-end-line="254" selection-end-column="51" />
+          <caret line="38" column="59" selection-start-line="38" selection-start-column="59" selection-end-line="38" selection-end-column="59" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/DefaultParam.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfConverter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7986577">
+          <caret line="55" column="4" selection-start-line="55" selection-start-column="4" selection-end-line="55" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForDecompresser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.025167786">
+          <caret line="88" column="39" selection-start-line="88" selection-start-column="39" selection-end-line="88" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkDecompressPipe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6728188">
+          <caret line="168" column="17" selection-start-line="168" selection-start-column="17" selection-end-line="168" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkConvertPipe.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="44" column="33" selection-start-line="44" selection-start-column="33" selection-end-line="44" selection-end-column="33" />
+          <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkHWEPipe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="59" column="22" selection-start-line="59" selection-start-column="22" selection-end-line="59" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkParallelPipe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="56" column="21" selection-start-line="56" selection-start-column="21" selection-end-line="56" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkPipe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.025167786">
+          <caret line="272" column="42" selection-start-line="272" selection-start-column="42" selection-end-line="272" selection-end-column="42" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1370,56 +1280,70 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="185" column="0" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkPipe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="272" column="42" selection-start-line="272" selection-start-column="42" selection-end-line="272" selection-end-column="42" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkScriptPipe.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/DefaultParam.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="128" column="46" selection-start-line="128" selection-start-column="46" selection-end-line="128" selection-end-column="46" />
+          <caret line="39" column="24" selection-start-line="39" selection-start-column="24" selection-end-line="39" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForConverter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="45" column="35" selection-start-line="45" selection-start-column="35" selection-end-line="45" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForVariantCaller.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3979933">
+          <caret line="155" column="56" selection-start-line="155" selection-start-column="56" selection-end-line="155" selection-end-column="56" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/Pipelines.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="322" column="23" selection-start-line="322" selection-start-column="23" selection-end-line="322" selection-end-column="23" />
+        <state vertical-scroll-proportion="1.8779265">
+          <caret line="281" column="5" selection-start-line="281" selection-start-column="5" selection-end-line="281" selection-end-column="5" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkDecompressPipe.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkReportPipe.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="168" column="17" selection-start-line="168" selection-start-column="17" selection-end-line="168" selection-end-column="17" />
+          <caret line="128" column="9" selection-start-line="128" selection-start-column="9" selection-end-line="128" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForDecompresser.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForReporter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="88" column="39" selection-start-line="88" selection-start-column="39" selection-end-line="88" selection-end-column="39" />
+          <caret line="176" column="56" selection-start-line="176" selection-start-column="43" selection-end-line="176" selection-end-column="56" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/main/MainOfDecompresser.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/util/ParameterForScriptPiper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.40604028">
-          <caret line="38" column="59" selection-start-line="38" selection-start-column="59" selection-end-line="38" selection-end-column="59" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="222" column="42" selection-start-line="222" selection-start-column="42" selection-end-line="222" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/uni/bielefeld/cmg/sparkhit/pipeline/SparkScriptPipe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9832215">
+          <caret line="161" column="0" selection-start-line="161" selection-start-column="0" selection-end-line="161" selection-end-column="0" />
           <folding />
         </state>
       </provider>

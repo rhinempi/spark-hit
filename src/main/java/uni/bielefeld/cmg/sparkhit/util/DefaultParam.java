@@ -36,6 +36,8 @@ public class DefaultParam implements Serializable{
     public String inputBuildPath;  // build reference data index, used by builder
 
     public String inputResultPath; // report recruitment statistics, used by reporter
+    public String word;
+    public int count = 0;
     public int outputformat = 0; // used by converter
     public String inputFqPath; // input query file, used by main program and converter
 
