@@ -21,6 +21,7 @@ package uni.bielefeld.cmg.sparkhit.util;
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import org.apache.commons.beanutils.converters.IntegerArrayConverter;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -28,11 +29,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterForReductioner {
+public class ParameterForCluster {
     private String[] arguments;
     private InfoDumper info = new InfoDumper();
 
-    public ParameterForReductioner(String[] arguments) throws IOException, ParseException {
+    public ParameterForCluster(String[] arguments) throws IOException, ParseException {
         this.arguments = arguments;
     }
 
@@ -48,7 +49,7 @@ public class ParameterForReductioner {
             WINDOW = "window",
             COLUMN = "column",
             CACHE = "cache",
-            COMPO = "component",
+            CLUSTER= "cluster",
             PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
@@ -66,7 +67,7 @@ public class ParameterForReductioner {
         parameterMap.put(WINDOW, o++);
         parameterMap.put(COLUMN, o++);
         parameterMap.put(CACHE, o++);
-        parameterMap.put(COMPO, o++);
+        parameterMap.put(CLUSTER, o++);
         parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
         parameterMap.put(HELP, o++);
@@ -102,9 +103,9 @@ public class ParameterForReductioner {
                 .hasArg(false).withDescription("weather to cache data in memory or not, default no")
                 .create(CACHE));
 
-        parameter.addOption(OptionBuilder.withArgName("Number of components")
-                .hasArg().withDescription("How many major components to calculate")
-                .create(COMPO));
+        parameter.addOption(OptionBuilder.withArgName("Cluster leaf number")
+                .hasArg().withDescription("how many leaf clusters, default is 2")
+                .create(CLUSTER));
 
         parameter.addOption(OptionBuilder.withArgName("re-partition num")
                 .hasArg().withDescription("even the load of each task, 1 partition for a task or 4 partitions for a task is recommended. Default, not re-partition")
@@ -185,8 +186,8 @@ public class ParameterForReductioner {
                 param.cache =true;
             }
 
-            if ((value = cl.getOptionValue(COMPO)) != null) {
-                param.componentNum = Integer.decode(value);
+            if ((value = cl.getOptionValue(CLUSTER)) != null) {
+                param.clusterNum = Integer.decode(value);
             }
 
             if ((value = cl.getOptionValue(INPUT_VCF)) != null) {

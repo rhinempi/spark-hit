@@ -5,6 +5,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
@@ -175,6 +176,57 @@ public class SparkReductionPipe implements Serializable{
             }
         }
 
+        class VariantToVector implements Function<String, Vector> {
+            public Vector call(String s) {
+
+                if (s.startsWith("#")) {
+                    return null;
+                }
+
+                String[] array = s.split("\\t");
+                double[] vector = new double[param.columnEnd - param.columnStart + 1];
+
+                if (array.length < param.columnEnd) {
+                    return null;
+                }
+
+                for (int i = param.columnStart-1; i < param.columnEnd; i++) {
+                    if (array[i].equals("0|0")) {
+                        vector[i-param.columnStart+1] = 0;
+                    } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
+                        vector[i-param.columnStart+1] = 1;
+                    } else if (array[i].equals("1|1")) {
+                        vector[i-param.columnStart+1] = 2;
+                    }
+                }
+                return Vectors.dense(vector);
+            }
+        }
+
+        class Filter implements Function<Vector, Boolean>, Serializable {
+            public Boolean call(Vector s) {
+                if (s != null) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        if (param.partitions != 0) {
+            vcfRDD = vcfRDD.repartition(param.partitions);
+        }
+
+        VariantToVector toVector = new VariantToVector();
+        JavaRDD<Vector> vectorRDD = vcfRDD.map(toVector);
+
+        Filter RDDFilter = new Filter();
+        vectorRDD = vectorRDD.filter(RDDFilter);
+
+        if (param.cache){
+            vectorRDD.cache();
+        }
+/*
         JavaRDD<Vector> ListRDD;
         if (param.window == 0) {
             PartitionIterator VCFToVectorRDD = new PartitionIterator();
@@ -188,11 +240,14 @@ public class SparkReductionPipe implements Serializable{
             ListRDD = ListRDD.repartition(param.partitions);
         }
 
-        ListRDD.cache();
+        if (param.cache) {
+            ListRDD.cache();
+        }
+        */
 
-        RowMatrix mat = new RowMatrix(ListRDD.rdd());
+        RowMatrix mat = new RowMatrix(vectorRDD.rdd());
 
-        Matrix pc = mat.computePrincipalComponents(3);
+        Matrix pc = mat.computePrincipalComponents(param.componentNum);
 
         RowMatrix projected = mat.multiply(pc);
 

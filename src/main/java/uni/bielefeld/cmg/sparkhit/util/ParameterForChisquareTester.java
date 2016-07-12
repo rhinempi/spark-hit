@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterForReductioner {
+public class ParameterForChisquareTester {
     private String[] arguments;
     private InfoDumper info = new InfoDumper();
 
-    public ParameterForReductioner(String[] arguments) throws IOException, ParseException {
+    public ParameterForChisquareTester(String[] arguments) throws IOException, ParseException {
         this.arguments = arguments;
     }
 
@@ -45,10 +45,8 @@ public class ParameterForReductioner {
             INPUT_VCF = "vcf",
             INPUT_TAB = "tab",
             OUTPUT_LINE = "outfile",
-            WINDOW = "window",
             COLUMN = "column",
             CACHE = "cache",
-            COMPO = "component",
             PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
@@ -63,10 +61,8 @@ public class ParameterForReductioner {
         parameterMap.put(INPUT_VCF, o++);
         parameterMap.put(INPUT_TAB, o++);
         parameterMap.put(OUTPUT_LINE, o++);
-        parameterMap.put(WINDOW, o++);
         parameterMap.put(COLUMN, o++);
         parameterMap.put(CACHE, o++);
-        parameterMap.put(COMPO, o++);
         parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
         parameterMap.put(HELP, o++);
@@ -87,12 +83,8 @@ public class ParameterForReductioner {
                 .create(INPUT_TAB));
 
         parameter.addOption(OptionBuilder.withArgName("output file")
-                .hasArg().withDescription("Output major components file")
+                .hasArg().withDescription("Output alleles p value")
                 .create(OUTPUT_LINE));
-
-        parameter.addOption(OptionBuilder.withArgName("SNP window size")
-                .hasArg().withDescription("window size for a block of snps")
-                .create(WINDOW));
 
         parameter.addOption(OptionBuilder.withArgName("Columns for Alleles")
                 .hasArg().withDescription("columns where allele info is set")
@@ -101,10 +93,6 @@ public class ParameterForReductioner {
         parameter.addOption(OptionBuilder.withArgName("Cache data")
                 .hasArg(false).withDescription("weather to cache data in memory or not, default no")
                 .create(CACHE));
-
-        parameter.addOption(OptionBuilder.withArgName("Number of components")
-                .hasArg().withDescription("How many major components to calculate")
-                .create(COMPO));
 
         parameter.addOption(OptionBuilder.withArgName("re-partition num")
                 .hasArg().withDescription("even the load of each task, 1 partition for a task or 4 partitions for a task is recommended. Default, not re-partition")
@@ -168,10 +156,6 @@ public class ParameterForReductioner {
                 param.partitions = Integer.decode(value);
             }
 
-            if ((value = cl.getOptionValue(WINDOW)) != null){
-                param.window = Integer.decode(value);
-            }
-
             if ((value = cl.getOptionValue(COLUMN)) != null){
                 param.columns = value;
                 param.columnStart = Integer.decode(value.split("-")[0]);
@@ -183,10 +167,6 @@ public class ParameterForReductioner {
 
             if (cl.hasOption(CACHE)){
                 param.cache =true;
-            }
-
-            if ((value = cl.getOptionValue(COMPO)) != null) {
-                param.componentNum = Integer.decode(value);
             }
 
             if ((value = cl.getOptionValue(INPUT_VCF)) != null) {

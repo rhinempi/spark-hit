@@ -5,7 +5,12 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import uni.bielefeld.cmg.sparkhit.algorithm.Statistic;
+import org.apache.spark.mllib.clustering.BisectingKMeans;
+import org.apache.spark.mllib.clustering.BisectingKMeansModel;
+import org.apache.spark.mllib.linalg.Matrix;
+import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.linalg.Vectors;
+import org.apache.spark.mllib.stat.Statistics;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
 
@@ -34,7 +39,7 @@ import java.io.Serializable;
  */
 
 
-public class SparkHWEPipe implements Serializable{
+public class SparkCorrelationPipe implements Serializable{
     private DefaultParam param;
     private InfoDumper info = new InfoDumper();
 
@@ -46,6 +51,8 @@ public class SparkHWEPipe implements Serializable{
         return conf;
     }
 
+
+
     public void spark() {
         SparkConf conf = setSparkConfiguration();
         info.readMessage("Initiating Spark context ...");
@@ -56,41 +63,38 @@ public class SparkHWEPipe implements Serializable{
 
         JavaRDD<String> vcfRDD = sc.textFile(param.inputFqPath);
 
-        class VariantToPValue implements Function<String, String> {
-            public String call(String s) {
-
-                double pHWE;
+        class VariantToVector implements Function<String, Vector> {
+            public Vector call(String s) {
 
                 if (s.startsWith("#")) {
                     return null;
                 }
 
                 String[] array = s.split("\\t");
+                double[] vector = new double[param.columnEnd - param.columnStart + 1];
 
                 if (array.length < param.columnEnd) {
                     return null;
                 }
 
-                int pp = 0, qq = 0, pq = 0;
                 for (int i = param.columnStart-1; i < param.columnEnd; i++) {
                     if (array[i].equals("0|0")) {
-                        pp++;
+                        vector[i-param.columnStart+1] = 0;
                     } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
-                        pq++;
+                        vector[i-param.columnStart+1] = 1;
                     } else if (array[i].equals("1|1")) {
-                        qq++;
+                        vector[i-param.columnStart+1] = 2;
                     }
                 }
-                pHWE = Statistic.calculateExactHWEPValue(pq, pp, qq);
-                return array[0] + "\t" + array[1] + "\t" + pHWE;
+                return Vectors.dense(vector);
             }
         }
 
-        class Filter implements Function<String, Boolean>, Serializable{
-            public Boolean call(String s){
-                if (s != null){
+        class Filter implements Function<Vector, Boolean>, Serializable {
+            public Boolean call(Vector s) {
+                if (s != null) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             }
@@ -100,16 +104,17 @@ public class SparkHWEPipe implements Serializable{
             vcfRDD = vcfRDD.repartition(param.partitions);
         }
 
-        vcfRDD.cache();
-
-        VariantToPValue toPValue = new VariantToPValue();
-        JavaRDD<String> pValueRDD = vcfRDD.map(toPValue);
+        VariantToVector toVector = new VariantToVector();
+        JavaRDD<Vector> vectorRDD = vcfRDD.map(toVector);
 
         Filter RDDFilter = new Filter();
-        pValueRDD = pValueRDD.filter(RDDFilter);
+        vectorRDD = vectorRDD.filter(RDDFilter);
 
-        pValueRDD.saveAsTextFile(param.outputPath);
+        if (param.cache){
+            vectorRDD.cache();
+        }
 
+        Matrix correlMatrix = Statistics.corr(vectorRDD.rdd(), "pearson");
     }
 
     public void setParam(DefaultParam param){

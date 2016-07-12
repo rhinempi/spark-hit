@@ -8,7 +8,7 @@ import org.apache.spark.api.java.function.Function;
 import uni.bielefeld.cmg.sparkhit.algorithm.Statistic;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
-
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import java.io.Serializable;
 
 /**
@@ -34,7 +34,7 @@ import java.io.Serializable;
  */
 
 
-public class SparkHWEPipe implements Serializable{
+public class SparkChiSquarePipe implements Serializable{
     private DefaultParam param;
     private InfoDumper info = new InfoDumper();
 
@@ -59,7 +59,7 @@ public class SparkHWEPipe implements Serializable{
         class VariantToPValue implements Function<String, String> {
             public String call(String s) {
 
-                double pHWE;
+                ChiSquareTest x = new ChiSquareTest();
 
                 if (s.startsWith("#")) {
                     return null;
@@ -81,8 +81,36 @@ public class SparkHWEPipe implements Serializable{
                         qq++;
                     }
                 }
-                pHWE = Statistic.calculateExactHWEPValue(pq, pp, qq);
-                return array[0] + "\t" + array[1] + "\t" + pHWE;
+
+                int total = param.columnEnd - param.columnStart +1;
+                double pHWE = Statistic.calculateExactHWEPValue(pq, pp, qq);
+                double ppE = Math.pow(pHWE*total,2);
+                double pqE = pHWE*total*(1-pHWE)*total*2;
+                double qqE = Math.pow((1-pHWE*total),2);
+
+                if (pp<=0){
+                    return array[0] + "\t" + pHWE + "\t" + 0;
+                }
+                if (pq <=0){
+                    return array[0] + "\t" + pHWE + "\t" + 0;
+                }
+                if (qq <=0) {
+                    return array[0] + "\t" + pHWE + "\t" + 0;
+                }
+                if (ppE <=0){
+                    return array[0] + "\t" + pHWE + "\t" + 0;
+                }
+                if (pqE <=0){
+                    return array[0] + "\t" + pHWE + "\t" + 0;
+                }
+                if (qqE <=0){
+                    return array[0] + "\t" + pHWE + "\t" + 0;
+                }
+
+                double[] expected = {ppE, pqE, qqE};
+                long[] observed = {pp, pq, qq};
+                double pvalue = x.chiSquareTest(expected, observed);
+                return array[0] + "\t" + pHWE + "\t" + pvalue;
             }
         }
 

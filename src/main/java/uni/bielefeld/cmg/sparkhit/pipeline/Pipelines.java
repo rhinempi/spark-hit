@@ -323,6 +323,24 @@ public class Pipelines implements Pipeline, Serializable{
         sDPipe.spark();
     }
 
+    public void sparkCluster(){
+        SparkClusterPipe sCPipe = new SparkClusterPipe();
+        sCPipe.setParam(param);
+        sCPipe.spark();
+    }
+
+    public void sparkCorrelationer(){
+        SparkCorrelationPipe sCPipe = new SparkCorrelationPipe();
+        sCPipe.setParam(param);
+        sCPipe.spark();
+    }
+
+    public void sparkChisquareTester(){
+        SparkChiSquarePipe sCPipe = new SparkChiSquarePipe();
+        sCPipe.setParam(param);
+        sCPipe.spark();
+    }
+
     public void setFastqUnitBuffer(FastqUnitBuffer inputFastqUnitBuffer){
         this.inputFastqUnitBuffer = inputFastqUnitBuffer;
     }
