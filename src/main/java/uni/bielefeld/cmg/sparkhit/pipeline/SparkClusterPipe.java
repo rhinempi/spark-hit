@@ -7,6 +7,8 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.clustering.BisectingKMeans;
 import org.apache.spark.mllib.clustering.BisectingKMeansModel;
+import org.apache.spark.mllib.clustering.KMeans;
+import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCRDD;
@@ -63,6 +65,7 @@ public class SparkClusterPipe implements Serializable{
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> vcfRDD = sc.textFile(param.inputFqPath);
+        vcfRDD.count();
 
         class VariantToVector implements Function<String, Vector> {
             public Vector call(String s) {
@@ -79,11 +82,11 @@ public class SparkClusterPipe implements Serializable{
                 }
 
                 for (int i = param.columnStart-1; i < param.columnEnd; i++) {
-                    if (array[i].equals("0|0")) {
+                    if (array[i].startsWith("0|0")) {
                         vector[i-param.columnStart+1] = 0;
-                    } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
+                    } else if (array[i].startsWith("0|1") || array[i].startsWith("1|0")) {
                         vector[i-param.columnStart+1] = 1;
-                    } else if (array[i].equals("1|1")) {
+                    } else if (array[i].startsWith("1|1")) {
                         vector[i-param.columnStart+1] = 2;
                     }
                 }
@@ -115,21 +118,33 @@ public class SparkClusterPipe implements Serializable{
             vectorRDD.cache();
         }
 
-        BisectingKMeans bkm = new BisectingKMeans().setK(param.clusterNum);
-        BisectingKMeansModel model = bkm.run(vectorRDD);
+        JavaRDD<Integer> resultRDD;
 
-        JavaRDD<Integer> resultRDD = model.predict(vectorRDD);
-        resultRDD.saveAsTextFile(param.outputPath);
+        if (param.model == 0) {
+            BisectingKMeans bkm = new BisectingKMeans().setK(param.clusterNum).setMaxIterations(param.iterationNum);
+            BisectingKMeansModel model = bkm.run(vectorRDD);
+         //   resultRDD = model.predict(vectorRDD);
 
-        System.out.println("Compute Cost: " + model.computeCost(vectorRDD));
-        for (Vector center : model.clusterCenters()) {
-            System.out.println("");
+            System.out.println("Compute Cost: " + model.computeCost(vectorRDD));
+            Vector[] clusterCenters = model.clusterCenters();
+            for (int i = 0; i < clusterCenters.length; i++) {
+                Vector clusterCenter = clusterCenters[i];
+                System.out.println("Cluster Center " + i + ": " + clusterCenter);
+            }
+        }else {
+                KMeansModel clusters = KMeans.train(vectorRDD.rdd(), param.clusterNum, param.iterationNum);
+                //    resultRDD = clusters.predict(vectorRDD);
+
+                Vector[] clusterCenters = clusters.clusterCenters();
+                for (int i = 0; i < clusterCenters.length; i++) {
+                    Vector clusterCenter = clusterCenters[i];
+                    System.out.println("Cluster Center " + i + ": " + clusterCenter);
+                }
         }
-        Vector[] clusterCenters = model.clusterCenters();
-        for (int i = 0; i < clusterCenters.length; i++) {
-            Vector clusterCenter = clusterCenters[i];
-            System.out.println("Cluster Center " + i + ": " + clusterCenter);
-        }
+
+       // resultRDD.saveAsTextFile(param.outputPath);
+        sc.stop();
+
     }
 
     public void setParam(DefaultParam param){

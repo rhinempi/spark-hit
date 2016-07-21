@@ -341,6 +341,12 @@ public class Pipelines implements Pipeline, Serializable{
         sCPipe.spark();
     }
 
+    public void sparkRegressioner(){
+        SparkReductionPipe sRPipe = new SparkReductionPipe();
+        sRPipe.setParam(param);
+        sRPipe.spark();
+    }
+
     public void setFastqUnitBuffer(FastqUnitBuffer inputFastqUnitBuffer){
         this.inputFastqUnitBuffer = inputFastqUnitBuffer;
     }

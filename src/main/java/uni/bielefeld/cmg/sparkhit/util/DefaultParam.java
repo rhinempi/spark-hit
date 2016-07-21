@@ -53,9 +53,15 @@ public class DefaultParam implements Serializable{
 
     public int window=10000;
     public String columns="2-3";
+    public String columns2="4-5";
     public int columnStart=2;
     public int columnEnd=3;
-    public int clusterNum=2;
+    public int column2Start=4;
+    public int column2End=5;
+    public int clusterNum=1;
+    public int iterationNum=20;
+    public int model=0;
+    public String inputTrainPath;
 
     public boolean cache=false;
     public int componentNum=3;

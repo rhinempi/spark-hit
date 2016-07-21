@@ -136,6 +136,7 @@ public class SparkReportPipe implements Serializable{
 
         JavaPairRDD<String, Integer> countsRDD1 = countsRDD.coalesce(1);
         countsRDD1.saveAsTextFile(param.outputPath);
+        sc.stop();
     }
 
     public void setParam(DefaultParam param){

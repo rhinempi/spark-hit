@@ -5,10 +5,12 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import uni.bielefeld.cmg.sparkhit.algorithm.Statistic;
+import org.apache.spark.mllib.linalg.Matrices;
+import org.apache.spark.mllib.linalg.Matrix;
+import org.apache.spark.mllib.stat.Statistics;
+import org.apache.spark.mllib.stat.test.ChiSqTestResult;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
-import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import java.io.Serializable;
 
 /**
@@ -59,58 +61,58 @@ public class SparkChiSquarePipe implements Serializable{
         class VariantToPValue implements Function<String, String> {
             public String call(String s) {
 
-                ChiSquareTest x = new ChiSquareTest();
-
                 if (s.startsWith("#")) {
                     return null;
                 }
 
                 String[] array = s.split("\\t");
 
-                if (array.length < param.columnEnd) {
+                if (array.length < param.column2End) {
                     return null;
                 }
 
-                int pp = 0, qq = 0, pq = 0;
+                int P =0, p= 0;
                 for (int i = param.columnStart-1; i < param.columnEnd; i++) {
-                    if (array[i].equals("0|0")) {
-                        pp++;
-                    } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
-                        pq++;
-                    } else if (array[i].equals("1|1")) {
-                        qq++;
+                    if (array[i].startsWith("0|0")) {
+                        P+=2;
+                    } else if (array[i].startsWith("0|1") || array[i].startsWith("1|0")) {
+                        P++;p++;
+                    } else if (array[i].startsWith("1|1")) {
+                        p+=2;
                     }
                 }
 
-                int total = param.columnEnd - param.columnStart +1;
-                double pHWE = Statistic.calculateExactHWEPValue(pq, pp, qq);
-                double ppE = Math.pow(pHWE*total,2);
-                double pqE = pHWE*total*(1-pHWE)*total*2;
-                double qqE = Math.pow((1-pHWE*total),2);
-
-                if (pp<=0){
-                    return array[0] + "\t" + pHWE + "\t" + 0;
-                }
-                if (pq <=0){
-                    return array[0] + "\t" + pHWE + "\t" + 0;
-                }
-                if (qq <=0) {
-                    return array[0] + "\t" + pHWE + "\t" + 0;
-                }
-                if (ppE <=0){
-                    return array[0] + "\t" + pHWE + "\t" + 0;
-                }
-                if (pqE <=0){
-                    return array[0] + "\t" + pHWE + "\t" + 0;
-                }
-                if (qqE <=0){
-                    return array[0] + "\t" + pHWE + "\t" + 0;
+                int A = 0, a = 0;
+                for (int i = param.column2Start-1; i < param.column2End; i++) {
+                    if (array[i].startsWith("0|0")) {
+                        A+=2;
+                    } else if (array[i].startsWith("0|1") || array[i].startsWith("1|0")) {
+                        A++;a++;
+                    } else if (array[i].startsWith("1|1")) {
+                        a+=2;
+                    }
                 }
 
-                double[] expected = {ppE, pqE, qqE};
-                long[] observed = {pp, pq, qq};
-                double pvalue = x.chiSquareTest(expected, observed);
-                return array[0] + "\t" + pHWE + "\t" + pvalue;
+                if ((P + p) ==0){
+                    return array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + 1;
+                }
+
+                if ((A + a) ==0){
+                    return array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + 1;
+                }
+
+                if (P+A==0){
+                    return array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + 1;
+                }
+
+                if (p+a==0){
+                    return array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + 1;
+                }
+
+                Matrix dm = Matrices.dense(2,2,new double[]{P, A, p, a});
+                ChiSqTestResult independenceTestResult = Statistics.chiSqTest(dm);
+                double pValue = independenceTestResult.pValue();
+                return array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + pValue;
             }
         }
 
@@ -136,8 +138,10 @@ public class SparkChiSquarePipe implements Serializable{
         Filter RDDFilter = new Filter();
         pValueRDD = pValueRDD.filter(RDDFilter);
 
-        pValueRDD.saveAsTextFile(param.outputPath);
+        pValueRDD.count();
 
+        //pValueRDD.saveAsTextFile(param.outputPath);
+        sc.stop();
     }
 
     public void setParam(DefaultParam param){

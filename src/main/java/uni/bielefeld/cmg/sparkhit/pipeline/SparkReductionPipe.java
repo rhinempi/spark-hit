@@ -86,11 +86,11 @@ public class SparkReductionPipe implements Serializable{
 
                     int feature = 0;
                     for (int i = 9; i < 9 + 1000; i++) {
-                        if (array[i].equals("0|0")) {
+                        if (array[i].startsWith("0|0")) {
                             feature = 0;
-                        } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
+                        } else if (array[i].startsWith("0|1") || array[i].startsWith("1|0")) {
                             feature = 1;
-                        } else if (array[i].equals("1|1")) {
+                        } else if (array[i].startsWith("1|1")) {
                             feature = 2;
                         }
                         snps.get(i-9).add(feature);
@@ -139,11 +139,11 @@ public class SparkReductionPipe implements Serializable{
                     if (lineMark % param.window == 0){p2 = 0; pq = 0; q2 = 0;}
 
                     for (int i = 9; i < 9 + 1000; i++) {
-                        if (array[i].equals("0|0")) {
+                        if (array[i].startsWith("0|0")) {
                             p2++;
-                        } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
+                        } else if (array[i].startsWith("0|1") || array[i].startsWith("1|0")) {
                             pq++;
-                        } else if (array[i].equals("1|1")) {
+                        } else if (array[i].startsWith("1|1")) {
                             q2++;
                         }
 
@@ -191,11 +191,11 @@ public class SparkReductionPipe implements Serializable{
                 }
 
                 for (int i = param.columnStart-1; i < param.columnEnd; i++) {
-                    if (array[i].equals("0|0")) {
+                    if (array[i].startsWith("0|0")) {
                         vector[i-param.columnStart+1] = 0;
-                    } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
+                    } else if (array[i].startsWith("0|1") || array[i].startsWith("1|0")) {
                         vector[i-param.columnStart+1] = 1;
-                    } else if (array[i].equals("1|1")) {
+                    } else if (array[i].startsWith("1|1")) {
                         vector[i-param.columnStart+1] = 2;
                     }
                 }
@@ -263,7 +263,7 @@ public class SparkReductionPipe implements Serializable{
                 e.printStackTrace();
             }
         }
-
+        sc.stop();
     }
 
     public void setParam(DefaultParam param){

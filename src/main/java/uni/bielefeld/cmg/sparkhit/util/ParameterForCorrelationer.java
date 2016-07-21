@@ -135,12 +135,12 @@ public class ParameterForCorrelationer {
 			/* Set Object cl of CommandLine class for Parameter storage */
             CommandLine cl = parser.parse(parameter, arguments, true);
             if (cl.hasOption(HELP)) {
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 System.exit(0);
             }
 
             if (cl.hasOption(HELP2)){
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 System.exit(0);
             }
 
@@ -174,7 +174,7 @@ public class ParameterForCorrelationer {
             }else if ((value = cl.getOptionValue(INPUT_TAB)) != null) {
                 param.inputFqPath = value;
             }else {
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 System.exit(0);
 //                throw new IOException("Input file not specified.\nUse -help for list of options");
             }
@@ -190,7 +190,7 @@ public class ParameterForCorrelationer {
             if ((value = cl.getOptionValue(OUTPUT_LINE)) != null){
                 param.outputPath = value;
             }else{
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 info.readMessage("Output file not set with -outfile options");
                 info.screenDump();
                 System.exit(0);

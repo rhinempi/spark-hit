@@ -21,7 +21,6 @@ package uni.bielefeld.cmg.sparkhit.util;
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import org.apache.commons.beanutils.converters.IntegerArrayConverter;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -46,10 +45,12 @@ public class ParameterForCluster {
             INPUT_VCF = "vcf",
             INPUT_TAB = "tab",
             OUTPUT_LINE = "outfile",
+            MODELS = "model",
             WINDOW = "window",
             COLUMN = "column",
             CACHE = "cache",
             CLUSTER= "cluster",
+            ITERATION= "iteration",
             PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
@@ -64,10 +65,12 @@ public class ParameterForCluster {
         parameterMap.put(INPUT_VCF, o++);
         parameterMap.put(INPUT_TAB, o++);
         parameterMap.put(OUTPUT_LINE, o++);
+        parameterMap.put(MODELS, o++);
         parameterMap.put(WINDOW, o++);
         parameterMap.put(COLUMN, o++);
         parameterMap.put(CACHE, o++);
         parameterMap.put(CLUSTER, o++);
+        parameterMap.put(ITERATION, o++);
         parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
         parameterMap.put(HELP, o++);
@@ -88,24 +91,32 @@ public class ParameterForCluster {
                 .create(INPUT_TAB));
 
         parameter.addOption(OptionBuilder.withArgName("output file")
-                .hasArg().withDescription("Output major components file")
+                .hasArg().withDescription("Output cluster index file")
                 .create(OUTPUT_LINE));
+
+        parameter.addOption(OptionBuilder.withArgName("cluster model")
+                .hasArg().withDescription("clustering model, 0 for hierarchical, 1 for centroid (k-mean), default is " + param.model)
+                .create(MODELS));
 
         parameter.addOption(OptionBuilder.withArgName("SNP window size")
                 .hasArg().withDescription("window size for a block of snps")
                 .create(WINDOW));
 
         parameter.addOption(OptionBuilder.withArgName("Columns for Alleles")
-                .hasArg().withDescription("columns where allele info is set")
+                .hasArg().withDescription("columns where allele info is set, default is " + param.columns)
                 .create(COLUMN));
 
         parameter.addOption(OptionBuilder.withArgName("Cache data")
                 .hasArg(false).withDescription("weather to cache data in memory or not, default no")
                 .create(CACHE));
 
-        parameter.addOption(OptionBuilder.withArgName("Cluster leaf number")
-                .hasArg().withDescription("how many leaf clusters, default is 2")
+        parameter.addOption(OptionBuilder.withArgName("Cluster number")
+                .hasArg().withDescription("how many leaf clusters, default is " + param.clusterNum)
                 .create(CLUSTER));
+
+        parameter.addOption(OptionBuilder.withArgName("Iteration number")
+                .hasArg().withDescription("how many iterations for learning, default is " + param.iterationNum)
+                .create(ITERATION));
 
         parameter.addOption(OptionBuilder.withArgName("re-partition num")
                 .hasArg().withDescription("even the load of each task, 1 partition for a task or 4 partitions for a task is recommended. Default, not re-partition")
@@ -148,12 +159,12 @@ public class ParameterForCluster {
 			/* Set Object cl of CommandLine class for Parameter storage */
             CommandLine cl = parser.parse(parameter, arguments, true);
             if (cl.hasOption(HELP)) {
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 System.exit(0);
             }
 
             if (cl.hasOption(HELP2)){
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 System.exit(0);
             }
 
@@ -186,8 +197,16 @@ public class ParameterForCluster {
                 param.cache =true;
             }
 
+            if ((value = cl.getOptionValue(MODELS)) != null) {
+                param.model = Integer.decode(value);
+            }
+
             if ((value = cl.getOptionValue(CLUSTER)) != null) {
                 param.clusterNum = Integer.decode(value);
+            }
+
+            if ((value = cl.getOptionValue(ITERATION)) != null) {
+                param.iterationNum = Integer.decode(value);
             }
 
             if ((value = cl.getOptionValue(INPUT_VCF)) != null) {
@@ -195,7 +214,7 @@ public class ParameterForCluster {
             }else if ((value = cl.getOptionValue(INPUT_TAB)) != null) {
                 param.inputFqPath = value;
             }else {
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 System.exit(0);
 //                throw new IOException("Input file not specified.\nUse -help for list of options");
             }
@@ -211,7 +230,7 @@ public class ParameterForCluster {
             if ((value = cl.getOptionValue(OUTPUT_LINE)) != null){
                 param.outputPath = value;
             }else{
-                help.printScriptPiperHelp();
+                help.printStatisticerHelp();
                 info.readMessage("Output file not set with -outfile options");
                 info.screenDump();
                 System.exit(0);

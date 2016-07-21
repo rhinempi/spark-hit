@@ -78,11 +78,11 @@ public class SparkCorrelationPipe implements Serializable{
                 }
 
                 for (int i = param.columnStart-1; i < param.columnEnd; i++) {
-                    if (array[i].equals("0|0")) {
+                    if (array[i].startsWith("0|0")) {
                         vector[i-param.columnStart+1] = 0;
-                    } else if (array[i].equals("0|1") || array[i].equals("1|0")) {
+                    } else if (array[i].startsWith("0|1") || array[i].startsWith("1|0")) {
                         vector[i-param.columnStart+1] = 1;
-                    } else if (array[i].equals("1|1")) {
+                    } else if (array[i].startsWith("1|1")) {
                         vector[i-param.columnStart+1] = 2;
                     }
                 }
@@ -115,6 +115,7 @@ public class SparkCorrelationPipe implements Serializable{
         }
 
         Matrix correlMatrix = Statistics.corr(vectorRDD.rdd(), "pearson");
+        sc.stop();
     }
 
     public void setParam(DefaultParam param){

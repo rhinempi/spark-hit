@@ -28,11 +28,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterForChisquareTester {
+public class ParameterForRegressioner {
     private String[] arguments;
     private InfoDumper info = new InfoDumper();
 
-    public ParameterForChisquareTester(String[] arguments) throws IOException, ParseException {
+    public ParameterForRegressioner(String[] arguments) throws IOException, ParseException {
         this.arguments = arguments;
     }
 
@@ -42,12 +42,15 @@ public class ParameterForChisquareTester {
 
     /* parameter IDs */
     private static final String
+            INPUT_TRAIN= "train",
             INPUT_VCF = "vcf",
             INPUT_TAB = "tab",
             OUTPUT_LINE = "outfile",
+            MODELS = "model",
+            WINDOW = "window",
             COLUMN = "column",
-            COLUMN2 = "column2",
             CACHE = "cache",
+            ITERATION= "iteration",
             PARTITIONS = "partition",
             VERSION = "version",
             HELP2 = "h",
@@ -59,12 +62,15 @@ public class ParameterForChisquareTester {
     public void putParameterID(){
         int o =0;
 
+        parameterMap.put(INPUT_TRAIN, o++);
         parameterMap.put(INPUT_VCF, o++);
         parameterMap.put(INPUT_TAB, o++);
         parameterMap.put(OUTPUT_LINE, o++);
+        parameterMap.put(MODELS, o++);
+        parameterMap.put(WINDOW, o++);
         parameterMap.put(COLUMN, o++);
-        parameterMap.put(COLUMN2, o++);
         parameterMap.put(CACHE, o++);
+        parameterMap.put(ITERATION, o++);
         parameterMap.put(PARTITIONS, o++);
         parameterMap.put(VERSION, o++);
         parameterMap.put(HELP, o++);
@@ -76,6 +82,10 @@ public class ParameterForChisquareTester {
 
 		/* use Object parameter of Options class to store parameter information */
 
+        parameter.addOption(OptionBuilder.withArgName("training data")
+                .hasArg().withDescription("Input vcf file containing training data")
+                .create(INPUT_TRAIN));
+
         parameter.addOption(OptionBuilder.withArgName("input VCF file")
                 .hasArg().withDescription("Input vcf file containing variation info")
                 .create(INPUT_VCF));
@@ -85,20 +95,28 @@ public class ParameterForChisquareTester {
                 .create(INPUT_TAB));
 
         parameter.addOption(OptionBuilder.withArgName("output file")
-                .hasArg().withDescription("Output alleles p value")
+                .hasArg().withDescription("Output cluster index file")
                 .create(OUTPUT_LINE));
 
-        parameter.addOption(OptionBuilder.withArgName("Columns for Alleles")
-                .hasArg().withDescription("1, columns where allele info is set, as case set")
-                .create(COLUMN));
+        parameter.addOption(OptionBuilder.withArgName("cluster model")
+                .hasArg().withDescription("clustering model, 0 for hierarchical, 1 for centroid (k-mean), default is " + param.model)
+                .create(MODELS));
 
-        parameter.addOption(OptionBuilder.withArgName("Columns2 for Alleles")
-                .hasArg().withDescription("2, columns where allele info is set, as control set")
-                .create(COLUMN2));
+        parameter.addOption(OptionBuilder.withArgName("SNP window size")
+                .hasArg().withDescription("window size for a block of snps")
+                .create(WINDOW));
+
+        parameter.addOption(OptionBuilder.withArgName("Columns for Alleles")
+                .hasArg().withDescription("columns where allele info is set, default is " + param.columns)
+                .create(COLUMN));
 
         parameter.addOption(OptionBuilder.withArgName("Cache data")
                 .hasArg(false).withDescription("weather to cache data in memory or not, default no")
                 .create(CACHE));
+
+        parameter.addOption(OptionBuilder.withArgName("Iteration number")
+                .hasArg().withDescription("how many iterations for learning, default is " + param.iterationNum)
+                .create(ITERATION));
 
         parameter.addOption(OptionBuilder.withArgName("re-partition num")
                 .hasArg().withDescription("even the load of each task, 1 partition for a task or 4 partitions for a task is recommended. Default, not re-partition")
@@ -162,6 +180,10 @@ public class ParameterForChisquareTester {
                 param.partitions = Integer.decode(value);
             }
 
+            if ((value = cl.getOptionValue(WINDOW)) != null){
+                param.window = Integer.decode(value);
+            }
+
             if ((value = cl.getOptionValue(COLUMN)) != null){
                 param.columns = value;
                 param.columnStart = Integer.decode(value.split("-")[0]);
@@ -171,17 +193,18 @@ public class ParameterForChisquareTester {
                 param.columnEnd = Integer.decode(param.columns.split("-")[1]);
             }
 
-            if ((value = cl.getOptionValue(COLUMN2)) != null){
-                param.columns2 = value;
-                param.column2Start = Integer.decode(value.split("-")[0]);
-                param.column2End = Integer.decode(value.split("-")[1]);
-            }else{
-                param.column2Start = Integer.decode(param.columns.split("-")[0]);
-                param.column2End = Integer.decode(param.columns.split("-")[1]);
-            }
-
             if (cl.hasOption(CACHE)){
                 param.cache =true;
+            }
+
+            if ((value = cl.getOptionValue(MODELS)) != null) {
+                param.model = Integer.decode(value);
+            }
+
+
+
+            if ((value = cl.getOptionValue(ITERATION)) != null) {
+                param.iterationNum = Integer.decode(value);
             }
 
             if ((value = cl.getOptionValue(INPUT_VCF)) != null) {
@@ -192,6 +215,13 @@ public class ParameterForChisquareTester {
                 help.printStatisticerHelp();
                 System.exit(0);
 //                throw new IOException("Input file not specified.\nUse -help for list of options");
+            }
+
+            if ((value = cl.getOptionValue(INPUT_TRAIN)) !=null){
+                param.inputTrainPath = value;
+            }else{
+                help.printStatisticerHelp();
+                System.exit(0);
             }
 
 			/* not applicable for HDFS and S3 */
