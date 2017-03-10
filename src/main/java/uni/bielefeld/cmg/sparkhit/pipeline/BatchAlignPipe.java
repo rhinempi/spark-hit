@@ -220,11 +220,13 @@ public class BatchAlignPipe implements Serializable{
         int trys, reportRepeatHits;
         int readCoverage;
         double readIdentityDouble;
+        double highestIdentity = 0;
         CandidateBlock mRefBlock;
         Qgram qGram;
         List<Qgram> qGramSort = new ArrayList<Qgram>();
         String outputLine = "";
         List<String> alignResult = new ArrayList<String>();
+        reportRepeatHits=1;
 
 
         int kmerSkip =1; // how to extend kmers, 1bp per extension
@@ -280,9 +282,9 @@ public class BatchAlignPipe implements Serializable{
 
             Collections.sort(qGramSort, new QgramComparator()); // sort all objects by their propertiy "qGrams"
             trys =0;
-            reportRepeatHits = 0;
 
             for (i=0; i<qGramSort.size();i++){
+                if (reportRepeatHits > param.reportRepeatHits && param.reportRepeatHits != 0 && param.reportRepeatHits != 1) break;
                 qGram = qGramSort.get(i);
                 mRefBlockLen = qGram.end - qGram.begin;
                 m = BBList.get(qGram.chr).s;
@@ -327,15 +329,24 @@ public class BatchAlignPipe implements Serializable{
                 eValue = Arithmetic.getEValue(pAlign.bestScore, param.minor, param.lambda, eReadLength, eRefLength);
                 if (eValue > param.eValue){continue;}
                 trys = 0;
+                reportRepeatHits++;
                 String formatEValue = String.format("%.2e",eValue);
                 String formatIdentity = String.format("%.2f",readIdentityDouble);
 
-                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
-                        + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
-                        + "\t+\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
-                        + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1);
+                if (param.reportRepeatHits==1){
+                    if (Double.compare(readIdentityDouble, highestIdentity) > 0){
+                        highestIdentity = readIdentityDouble;
+                        outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
+                                + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
+                                + "\t-\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
+                                + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1) + "\n";
+                    }
+                }else {
 
-                alignResult.add(outputLine);
+                    outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t" + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1) + "\t+\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1);
+
+                    alignResult.add(outputLine);
+                }
 
             } // end of foreach qGram
             qGramSort.clear();
@@ -394,8 +405,9 @@ public class BatchAlignPipe implements Serializable{
             pAlign.mergeRefBlockList.clear();
             Collections.sort(qGramSort, new QgramComparator()); // sort all objects by their propertiy "qGrams"
             trys =0;
-            reportRepeatHits = 0;
+
             for (i=0; i<qGramSort.size();i++){
+                if (reportRepeatHits > param.reportRepeatHits && param.reportRepeatHits != 0 && param.reportRepeatHits != 1) break;
                 qGram = qGramSort.get(i);
                 mRefBlockLen = qGram.end - qGram.begin;
                 m = BBList.get(qGram.chr).s;
@@ -434,17 +446,30 @@ public class BatchAlignPipe implements Serializable{
                 eValue = Arithmetic.getEValue(pAlign.bestScore, param.minor, param.lambda, eReadLength, eRefLength);
                 if (eValue > param.eValue){continue;}
                 trys = 0;
+                reportRepeatHits++;
                 String formatEValue = String.format("%.2e",eValue);
                 String formatIdentity = String.format("%.2f",readIdentityDouble);
 
-                outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
-                        + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
-                        + "\t-\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
-                        + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin+ pAlign.endSecond + 1);
-                alignResult.add(outputLine);
+                if (param.reportRepeatHits==1){
+                    if (Double.compare(readIdentityDouble, highestIdentity) > 0){
+                        highestIdentity = readIdentityDouble;
+                        outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
+                                + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
+                                + "\t-\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
+                                + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1) + "\n";
+
+                    }
+                }else {
+
+                    outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t" + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1) + "\t-\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1);
+                    alignResult.add(outputLine);
+                }
             } // end of qGram loop
         } // end of negative strand
 
+        if (param.reportRepeatHits == 1){
+            alignResult.add(outputLine);
+        }
         return alignResult;
     }
 

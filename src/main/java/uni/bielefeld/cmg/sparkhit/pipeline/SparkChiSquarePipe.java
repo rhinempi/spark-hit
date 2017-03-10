@@ -116,6 +116,25 @@ public class SparkChiSquarePipe implements Serializable{
             }
         }
 
+        class TabVariantToPValue implements Function<String, String> {
+            public String call(String s) {
+                String[] array = s.split("\\t");
+                String prefix="";
+                double P = Double.parseDouble(array[param.column2Start-1]);
+                double A = Double.parseDouble(array[param.column2Start]);
+                double p = Double.parseDouble(array[param.column2Start+1]);
+                double a = Double.parseDouble(array[param.column2Start+2]);
+                for (int i=0;i<param.columnEnd-param.columnStart+1;i++){
+                    prefix += array[i] + "\t";
+                }
+
+                Matrix dm = Matrices.dense(2,2,new double[]{P, A, p, a});
+                ChiSqTestResult independenceTestResult = Statistics.chiSqTest(dm);
+                double pValue = independenceTestResult.pValue();
+                return prefix + pValue;
+            }
+        }
+
         class Filter implements Function<String, Boolean>, Serializable{
             public Boolean call(String s){
                 if (s != null){
@@ -132,15 +151,20 @@ public class SparkChiSquarePipe implements Serializable{
 
         vcfRDD.cache();
 
-        VariantToPValue toPValue = new VariantToPValue();
-        JavaRDD<String> pValueRDD = vcfRDD.map(toPValue);
+        JavaRDD<String> pValueRDD;
+
+        if (param.inputTabPath==null) {
+            VariantToPValue toPValue = new VariantToPValue();
+            pValueRDD= vcfRDD.map(toPValue);
+        }else {
+            TabVariantToPValue toPValue = new TabVariantToPValue();
+            pValueRDD = vcfRDD.map(toPValue);
+        }
 
         Filter RDDFilter = new Filter();
         pValueRDD = pValueRDD.filter(RDDFilter);
 
-        pValueRDD.count();
-
-        //pValueRDD.saveAsTextFile(param.outputPath);
+        pValueRDD.saveAsTextFile(param.outputPath);
         sc.stop();
     }
 

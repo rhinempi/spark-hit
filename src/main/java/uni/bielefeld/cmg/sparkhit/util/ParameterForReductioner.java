@@ -47,6 +47,7 @@ public class ParameterForReductioner {
             OUTPUT_LINE = "outfile",
             WINDOW = "window",
             COLUMN = "column",
+            DIRECT = "row",
             CACHE = "cache",
             COMPO = "component",
             PARTITIONS = "partition",
@@ -65,6 +66,7 @@ public class ParameterForReductioner {
         parameterMap.put(OUTPUT_LINE, o++);
         parameterMap.put(WINDOW, o++);
         parameterMap.put(COLUMN, o++);
+        parameterMap.put(DIRECT, o++);
         parameterMap.put(CACHE, o++);
         parameterMap.put(COMPO, o++);
         parameterMap.put(PARTITIONS, o++);
@@ -97,6 +99,10 @@ public class ParameterForReductioner {
         parameter.addOption(OptionBuilder.withArgName("Columns for Alleles")
                 .hasArg().withDescription("columns where allele info is set")
                 .create(COLUMN));
+
+        parameter.addOption(OptionBuilder.withArgName("Table direction")
+                .hasArg(false).withDescription("Samples listed in row or column, default is column")
+                .create(DIRECT));
 
         parameter.addOption(OptionBuilder.withArgName("Cache data")
                 .hasArg(false).withDescription("weather to cache data in memory or not, default no")
@@ -181,6 +187,10 @@ public class ParameterForReductioner {
                 param.columnEnd = Integer.decode(param.columns.split("-")[1]);
             }
 
+            if (cl.hasOption(DIRECT)){
+                param.horizontal =true;
+            }
+
             if (cl.hasOption(CACHE)){
                 param.cache =true;
             }
@@ -193,6 +203,7 @@ public class ParameterForReductioner {
                 param.inputFqPath = value;
             }else if ((value = cl.getOptionValue(INPUT_TAB)) != null) {
                 param.inputFqPath = value;
+                param.inputTabPath = value;
             }else {
                 help.printStatisticerHelp();
                 System.exit(0);

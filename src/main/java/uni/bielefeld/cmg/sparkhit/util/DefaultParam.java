@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOU
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
@@ -41,8 +41,11 @@ public class DefaultParam implements Serializable{
     public int outputformat = 0; // used by converter
     public String inputFqPath; // input query file, used by main program and converter
 
+    public String inputTabPath;
+
     public String inputFqLinePath;  // input query file, one line per unit
     public String inputFaPath; // input reference file, used by main program
+    public boolean filename = false;  // tag filename to query sequence id
 
     public String toolDepend = " "; // external tool dependencies such as sh, perl, java package
     public String tool;  // external tool such as bwa mem, bowtie2
@@ -51,7 +54,8 @@ public class DefaultParam implements Serializable{
     public boolean filterToFasta = false;
     public boolean lineToFasta = false;
 
-    public int window=10000;
+    public int window=0;
+    public boolean horizontal=false;
     public String columns="2-3";
     public String columns2="4-5";
     public int columnStart=2;
@@ -96,7 +100,6 @@ public class DefaultParam implements Serializable{
     public  int bestPigeon = 2;             // at least 2 kmers to form a block
     public  int maxTrys = 20;               // tries for alignment
     public  int skipThreshold = 1000;       // threshold for long reads with 2bp skip per extension
-    public  int globalSignal = 0;           //
 
     public  double eValue = 10d;                     // default evalue cutoff
     public  int chains = 0;                 // alignment for chains: 1 positive; 2 complementary; 0 Both

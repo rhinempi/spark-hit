@@ -44,6 +44,7 @@ public class ParameterForScriptPiper {
     private static final String
             INPUT_FASTQ = "fastq",
             INPUT_LINE = "line",
+            INPUT_TAG = "tag",
             FASTQ_FILTER = "filter",
             FASTA_CONVERT = "tofasta",
             LINE_FASTA = "linetofa",
@@ -64,6 +65,7 @@ public class ParameterForScriptPiper {
 
         parameterMap.put(INPUT_FASTQ, o++);
         parameterMap.put(INPUT_LINE, o++);
+        parameterMap.put(INPUT_TAG, o++);
         parameterMap.put(FASTQ_FILTER, o++);
         parameterMap.put(FASTA_CONVERT, o++);
         parameterMap.put(LINE_FASTA, o++);
@@ -89,6 +91,10 @@ public class ParameterForScriptPiper {
         parameter.addOption(OptionBuilder.withArgName("input line file")
                 .hasArg().withDescription("Input NGS data, line based text file format, one line per unit")
                 .create(INPUT_LINE));
+
+        parameter.addOption(OptionBuilder.withArgName("tag file name")
+                .hasArg(false).withDescription("Set to tag filename to sequence id. It is useful when you are processing lots of samples at the same time")
+                .create(INPUT_TAG));
 
         parameter.addOption(OptionBuilder.withArgName("filter input fastq")
                 .hasArg(false).withDescription("Weather to filter input fastq file or not, default not (big data with small error, who knows)")
@@ -214,6 +220,10 @@ public class ParameterForScriptPiper {
                 info.readParagraphedMessages("Output file : \n\t" + param.outputPath + "\nalready exists, will be overwrite.");
                 info.screenDump();
                 Runtime.getRuntime().exec("rm -rf " + param.outputPath);
+            }
+
+            if (cl.hasOption(INPUT_TAG)){
+                param.filename = true;
             }
 
             if (cl.hasOption(FASTQ_FILTER)){

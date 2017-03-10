@@ -1,12 +1,22 @@
 package uni.bielefeld.cmg.sparkhit.pipeline;
 
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaNewHadoopRDD;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.broadcast.Broadcast;
+import scala.Tuple2;
 import uni.bielefeld.cmg.sparkhit.matrix.ScoreMatrix;
 import uni.bielefeld.cmg.sparkhit.reference.RefStructBuilder;
 import uni.bielefeld.cmg.sparkhit.reference.RefStructSerializer;
@@ -17,6 +27,7 @@ import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -171,7 +182,60 @@ public class SparkPipe implements Serializable {
         SparkConf conf = setSparkConfiguration();
         JavaSparkContext sc = new JavaSparkContext(conf);
 
-        JavaRDD<String> FastqRDD = sc.textFile(param.inputFqPath);
+        JavaRDD<String> FastqRDD;
+
+        if (param.filename){
+            class Tuple2String implements Function<Tuple2<String, String>, String>, Serializable{
+                public String call(Tuple2<String, String> s){
+                    return ("@" + s._1 + "|" + s._2);
+                }
+            }
+
+            Tuple2String RDDmerge = new Tuple2String();
+
+            JavaPairRDD<LongWritable, Text> javaPairRDD = sc.newAPIHadoopFile(
+                    param.inputFqPath,
+                    TextInputFormat.class,
+                    LongWritable.class,
+                    Text.class,
+                    new Configuration()
+            );
+
+            JavaNewHadoopRDD<LongWritable, Text> hadoopRDD = (JavaNewHadoopRDD) javaPairRDD;
+
+            JavaRDD<Tuple2<String, String>> namedLinesRDD = hadoopRDD.mapPartitionsWithInputSplit(
+                    new Function2<InputSplit, Iterator<Tuple2<LongWritable, Text>>, Iterator<Tuple2<String, String>>>() {
+                        @Override
+                        public Iterator<Tuple2<String, String>> call(InputSplit inputSplit, final Iterator<Tuple2<LongWritable, Text>> lines) throws Exception {
+                            FileSplit fileSplit = (FileSplit) inputSplit;
+                            final String fileName = fileSplit.getPath().getName();
+                            return new Iterator<Tuple2<String, String>>() {
+                                @Override
+                                public boolean hasNext() {
+                                    return lines.hasNext();
+                                }
+                                @Override
+                                public Tuple2<String, String> next() {
+                                    Tuple2<LongWritable, Text> entry = lines.next();
+                                    return new Tuple2<String, String>(fileName, entry._2().toString());
+                                }
+
+                                @Override
+                                public void remove() {
+                                    throw new IllegalStateException();
+                                }
+                            };
+                        }
+                    },
+                    true
+            );
+
+            FastqRDD = namedLinesRDD.map(RDDmerge);
+        }else {
+
+            FastqRDD = sc.textFile(param.inputFqPath);
+
+        }
 
         RefStructBuilder ref = buildReference();
 
@@ -190,11 +254,13 @@ public class SparkPipe implements Serializable {
         info.readMessage("Spark kryo reference data structure serialization time : "  + T + " ms");
         info.screenDump();
 
+
+
         class SparkBatchAlign implements FlatMapFunction<String, String>, Serializable{
 
             BatchAlignPipe bPipe = new BatchAlignPipe(broadParam.value());
 
-            public Iterable<String> call(String s){
+            public Iterator<String> call(String s){
 
                 bPipe.BBList = broadBBList.value();
                 bPipe.index = broadIndex.value();
@@ -203,7 +269,7 @@ public class SparkPipe implements Serializable {
                 bPipe.totalLength = totalLength;
                 bPipe.totalNum = totalNum;
 
-                return bPipe.sparkRecruit(s);
+                return bPipe.sparkRecruit(s).iterator();
             }
         }
 
@@ -228,7 +294,63 @@ public class SparkPipe implements Serializable {
         info.screenDump();
         JavaSparkContext sc = new JavaSparkContext(conf);
 
-        JavaRDD<String> FastqRDD = sc.textFile(param.inputFqPath);
+        JavaRDD<String> FastqRDD;
+
+        if (param.filename){
+            class Tuple2String implements Function<Tuple2<String, String>, String>, Serializable{
+                public String call(Tuple2<String, String> s){
+                    if (s._2.startsWith("@")) {
+                        return ("@" + s._1 + "|" + s._2);
+                    }else{
+                        return s._2;
+                    }
+                }
+            }
+
+            Tuple2String RDDmerge = new Tuple2String();
+
+            JavaPairRDD<LongWritable, Text> javaPairRDD = sc.newAPIHadoopFile(
+                    param.inputFqPath,
+                    TextInputFormat.class,
+                    LongWritable.class,
+                    Text.class,
+                    new Configuration()
+            );
+
+            JavaNewHadoopRDD<LongWritable, Text> hadoopRDD = (JavaNewHadoopRDD) javaPairRDD;
+
+            JavaRDD<Tuple2<String, String>> namedLinesRDD = hadoopRDD.mapPartitionsWithInputSplit(
+                    new Function2<InputSplit, Iterator<Tuple2<LongWritable, Text>>, Iterator<Tuple2<String, String>>>() {
+                        @Override
+                        public Iterator<Tuple2<String, String>> call(InputSplit inputSplit, final Iterator<Tuple2<LongWritable, Text>> lines) throws Exception {
+                            FileSplit fileSplit = (FileSplit) inputSplit;
+                            final String fileName = fileSplit.getPath().getName();
+                            return new Iterator<Tuple2<String, String>>() {
+                                @Override
+                                public boolean hasNext() {
+                                    return lines.hasNext();
+                                }
+                                @Override
+                                public Tuple2<String, String> next() {
+                                    Tuple2<LongWritable, Text> entry = lines.next();
+                                    return new Tuple2<String, String>(fileName, entry._2().toString());
+                                }
+
+                                @Override
+                                public void remove() {
+                                    throw new IllegalStateException();
+                                }
+                            };
+                        }
+                    },
+                    true
+            );
+
+            FastqRDD = namedLinesRDD.map(RDDmerge);
+        }else {
+
+            FastqRDD = sc.textFile(param.inputFqPath);
+        }
 
         RefStructBuilder ref = buildReference();
 
@@ -284,7 +406,7 @@ public class SparkPipe implements Serializable {
 
             BatchAlignPipe bPipe = new BatchAlignPipe(broadParam.value());
 
-            public Iterable<String> call(String s){
+            public Iterator<String> call(String s){
 
                 bPipe.BBList = broadBBList.value();
                 bPipe.index = broadIndex.value();
@@ -293,7 +415,7 @@ public class SparkPipe implements Serializable {
                 bPipe.totalLength = totalLength;
                 bPipe.totalNum = totalNum;
 
-                return bPipe.sparkRecruit(s);
+                return bPipe.sparkRecruit(s).iterator();
             }
         }
 

@@ -71,7 +71,7 @@ public class ParameterForConverter {
 		/* use Object parameter of Options class to store parameter information */
 
         parameter.addOption(OptionBuilder.withArgName("input fastq file")
-                .hasArg().withDescription("Input spark hit result file in tabular format. Accept wild card, s3n schema, hdfs schema")
+                .hasArg().withDescription("Input Next Generation Sequencing (NGS) data, fastq file format, four line per unit")
                 .create(INPUT_FASTQ));
 
         parameter.addOption(OptionBuilder.withArgName("output file")

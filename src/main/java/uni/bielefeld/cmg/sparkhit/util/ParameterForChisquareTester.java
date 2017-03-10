@@ -188,6 +188,7 @@ public class ParameterForChisquareTester {
                 param.inputFqPath = value;
             }else if ((value = cl.getOptionValue(INPUT_TAB)) != null) {
                 param.inputFqPath = value;
+                param.inputTabPath = value;
             }else {
                 help.printStatisticerHelp();
                 System.exit(0);

@@ -42,9 +42,10 @@ public class Parameter {
     DefaultParam param = new DefaultParam();
 
     /* parameter IDs */
-    private static final String BUILD_REF = "build",
+    private static final String
             INPUT_FASTQ = "fastq",
             INPUT_LINE = "line",
+            INPUT_TAG= "tag",
             INPUT_REF = "reference",
             OUTPUT_FILE = "outfile",
             KMER_SIZE = "kmer",
@@ -70,9 +71,9 @@ public class Parameter {
     public void putParameterID(){
         int o =0;
 
-        parameterMap.put(BUILD_REF, o++);
         parameterMap.put(INPUT_FASTQ, o++);
         parameterMap.put(INPUT_LINE, o++);
+        parameterMap.put(INPUT_TAG, o++);
         parameterMap.put(INPUT_REF, o++);
         parameterMap.put(OUTPUT_FILE, o++);
         parameterMap.put(KMER_SIZE, o++);
@@ -97,9 +98,6 @@ public class Parameter {
 
 
 		/* use Object parameter of Options class to store parameter information */
-        parameter.addOption(OptionBuilder.withArgName("ref genome file.fa")
-                .hasArg().withDescription("build index of reference genome.\n")
-                .create(BUILD_REF));
 
         parameter.addOption(OptionBuilder.withArgName("input fastq file")
                 .hasArg().withDescription("Input Next Generation Sequencing (NGS) data, fastq file format, four line per unit")
@@ -108,6 +106,10 @@ public class Parameter {
         parameter.addOption(OptionBuilder.withArgName("input line file")
                 .hasArg().withDescription("Input NGS data, line based text file format, one line per unit")
                 .create(INPUT_LINE));
+
+        parameter.addOption(OptionBuilder.withArgName("tag filename")
+                .hasArg(false).withDescription("Set to tag filename to sequence id. It is useful when you are processing lots of samples at the same time")
+                .create(INPUT_TAG));
 
         parameter.addOption(OptionBuilder.withArgName("input reference")
                 .hasArg().withDescription("Input genome reference file, usually fasta format file, as input file")
@@ -158,7 +160,7 @@ public class Parameter {
                 .create(HITS));
 
         parameter.addOption(OptionBuilder.withArgName("strand +/-")
-                .hasArg().withDescription("")
+                .hasArg().withDescription("0 for both strands, 1 for only + strand, 2 for only - strand")
                 .create(STRAND));
 
         parameter.addOption(OptionBuilder.withArgName("number of threads")
@@ -258,11 +260,6 @@ public class Parameter {
             /**
              * not available for now
              */
-            if ((value = cl.getOptionValue(BUILD_REF)) != null){
-                param.inputBuildPath = new File(value).getAbsolutePath();
-                param.inputFaPath = param.inputBuildPath;
-                return param;
-            }
 
             if ((value = cl.getOptionValue(THREADS)) != null){
                 if (Integer.decode(value) <= threads){
@@ -379,10 +376,14 @@ public class Parameter {
             }
 
             File outfile = new File(param.outputPath).getAbsoluteFile();
-            if (outfile.exists()){
+            if (outfile.exists()) {
                 info.readParagraphedMessages("Output file : \n\t" + param.outputPath + "\nalready exists, will be overwrite.");
                 info.screenDump();
                 Runtime.getRuntime().exec("rm -rf " + param.outputPath);
+            }
+
+            if (cl.hasOption(INPUT_TAG)){
+                param.filename = true;
             }
 
             if (param.inputFqPath.endsWith(".gz")){
