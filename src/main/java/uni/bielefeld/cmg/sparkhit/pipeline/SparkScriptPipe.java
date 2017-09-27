@@ -301,7 +301,7 @@ public class SparkScriptPipe implements Serializable{
         }
 
         param.toolParam.trim();
-        String command = param.toolDepend + " " + param.tool + " \"" + param.toolParam + "\"";
+        String command = param.toolDepend + " " + param.tool + " " + param.toolParam;
         info.readMessage(command);
         info.screenDump();
 

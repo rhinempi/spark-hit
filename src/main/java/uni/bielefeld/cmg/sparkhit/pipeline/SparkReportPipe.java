@@ -8,12 +8,16 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.VoidFunction;
 import scala.Tuple2;
 import scala.Tuple3;
 import scala.annotation.meta.param;
+import uni.bielefeld.cmg.sparkhit.io.TextFileBufferOutput;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
 import uni.bielefeld.cmg.sparkhit.util.InfoDumper;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -134,8 +138,33 @@ public class SparkReportPipe implements Serializable{
         PairsToCount PairRDDToCount = new PairsToCount();
         JavaPairRDD<String, Integer> countsRDD = hitsPairRDD.reduceByKey(PairRDDToCount);
 
-        JavaPairRDD<String, Integer> countsRDD1 = countsRDD.coalesce(1);
-        countsRDD1.saveAsTextFile(param.outputPath);
+//        JavaPairRDD<String, Integer> countsRDD1 = countsRDD.coalesce(1);
+  //      countsRDD1.saveAsTextFile(param.outputPath);
+        /**
+         * write into local file
+         */
+        TextFileBufferOutput reportWriter = new TextFileBufferOutput();
+        reportWriter.setOutput(param.outputPath,true);
+        BufferedWriter reportBufferedWriter = reportWriter.getOutputBufferWriter();
+
+        List<Tuple2<String, Integer>> reportList = countsRDD.collect();
+        for (Tuple2<String, Integer> countTuple : reportList){
+            try {
+                reportBufferedWriter.write(countTuple._2() + "\t" + countTuple._1() + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+                info.readIOException(e);
+                info.screenDump();
+                System.exit(1);
+            }
+        }
+        try {
+            reportBufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
         sc.stop();
     }
 

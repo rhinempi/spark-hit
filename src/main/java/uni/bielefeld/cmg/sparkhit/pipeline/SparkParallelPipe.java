@@ -76,7 +76,7 @@ public class SparkParallelPipe implements Serializable{
 
         JavaRDD<Integer> distRDD = sc.parallelize(data, param.inputNodes);
 
-        String command = param.toolDepend + " " + param.tool + " \"" + param.toolParam + "\"";
+        String command = param.toolDepend + " " + param.tool + " " + param.toolParam ;
         info.readMessage(command);
         info.screenDump();
 
