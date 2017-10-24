@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class AlignmentParameter implements Serializable{
     final public int maxReadLength = 500;
-    final public int maxBlockLength = 2*maxReadLength +12*3;
+    final public int maxBlockLength = 2*maxReadLength +15*3;
     final public int oneNtBits = 4;
     final public int twoNtBits = oneNtBits * oneNtBits;
     final public int threeNtBits = twoNtBits * oneNtBits;
@@ -39,8 +39,8 @@ public class AlignmentParameter implements Serializable{
     public int[] kmers =new int[maxReadLength];
     public int[] revKmers =new int[maxReadLength];
 
-    public int[] bRead =new int[maxReadLength/12+1];
-    public int[] bRevRead =new int[maxReadLength/12+1];
+    public int[] bRead =new int[maxReadLength/15+1];
+    public int[] bRevRead =new int[maxReadLength/15+1];
 
     public int[] fourMer =new int[fourNtBits];
     public int[] fourMerBegin =new int[fourNtBits];
@@ -51,8 +51,8 @@ public class AlignmentParameter implements Serializable{
     public List<CandidateBlock> cRefBlockList = new ArrayList<CandidateBlock>();
     public List<CandidateBlock> mergeRefBlockList = new ArrayList<CandidateBlock>();
 
-    public int[] singleNtBit = new int[maxReadLength+12];   // read bit seq
-    public int[] singleNtBitComplement = new int[maxReadLength+12];
+    public int[] singleNtBit = new int[maxReadLength+15];   // read bit seq
+    public int[] singleNtBitComplement = new int[maxReadLength+15];
 
     public int[] mRefBlockNtBit = new int[maxBlockLength];
 

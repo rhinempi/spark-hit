@@ -63,13 +63,38 @@ public class HelpParam {
         final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.Main sparkhit.jar");
         final String executable2 = System.getProperty("executable2", "sparkhit mapper [spark parameter]");
         err.println("Name:");
-        err.println("\tSparkHit Main");
+        err.println("\tSparkHit recruiter");
         err.println();
         err.println("Options:");
         formatter.printOptions(new PrintWriter(err, true), 85, parameter, 2, 3); /* print formatted parameters */
         err.println();
         err.println("Usage:");
         err.println("\trun fragment recruitment : ");
+        err.println(executable + " [parameters] -fastq query.fq -reference reference.fa -outfile output_file");
+        err.println(executable + " [parameters] -line query.txt -reference reference.fa -outfile output_file");
+        err.println(executable2 + " [parameters] -fastq query.fq -reference reference.fa -outfile output_file\"");
+        err.println();
+    }
+
+    public void printMapperHelp(){
+        HelpFormatter formatter =new HelpFormatter();
+        formatter.setOptionComparator(new Comparator<Option>(){
+            public int compare(Option o1, Option o2){
+                return Integer.compare(parameterMap.get(o1.getOpt()),
+                        parameterMap.get(o2.getOpt()));
+            }
+        });
+
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.Main sparkhit.jar");
+        final String executable2 = System.getProperty("executable2", "sparkhit mapper [spark parameter]");
+        err.println("Name:");
+        err.println("\tSparkHit Mapper");
+        err.println();
+        err.println("Options:");
+        formatter.printOptions(new PrintWriter(err, true), 85, parameter, 2, 3); /* print formatted parameters */
+        err.println();
+        err.println("Usage:");
+        err.println("\trun read mapping : ");
         err.println(executable + " [parameters] -fastq query.fq -reference reference.fa -outfile output_file");
         err.println(executable + " [parameters] -line query.txt -reference reference.fa -outfile output_file");
         err.println(executable2 + " [parameters] -fastq query.fq -reference reference.fa -outfile output_file\"");

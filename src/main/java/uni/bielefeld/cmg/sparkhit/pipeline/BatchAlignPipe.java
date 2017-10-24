@@ -82,7 +82,7 @@ public class BatchAlignPipe implements Serializable{
             pAlign.bestKmers = pAlign.alignLength - (pAlign.alignLength - pAlign.bestNas) * 4 - 3;
             if (param.readIdentity >= 94) {
                 pAlign.bestPigeon = pAlign.alignLength / param.kmerSize - 1 - (pAlign.alignLength - pAlign.bestNas);
-                if (pAlign.bestPigeon < 1 ) pAlign.bestPigeon = 1;
+                if (pAlign.bestPigeon <=1 ) pAlign.bestPigeon = 2;
             }
         }
 
@@ -121,7 +121,7 @@ public class BatchAlignPipe implements Serializable{
             pAlign.bestKmers = pAlign.alignLength - (pAlign.alignLength - pAlign.bestNas) * 4 - 3;
             if (param.readIdentity >= 94) {   // pigeon hole value
                 pAlign.bestPigeon = pAlign.alignLength / param.kmerSize - 1 - (pAlign.alignLength - pAlign.bestNas);
-                if (pAlign.bestPigeon < 1 ) pAlign.bestPigeon = 1;
+                if (pAlign.bestPigeon <= 1 ) pAlign.bestPigeon = 2;
             }
         }
 
@@ -135,11 +135,12 @@ public class BatchAlignPipe implements Serializable{
 
         return alignmentResult;
     }
+
     private int readBinaryBlock(ReadInfo rInfo){
-        /* the same binary operation with RefSeq binary (12nt), but written in a different way */
+        /* the same binary operation with RefSeq binary (15nt), but written in a different way */
         int i,j;
         int bInteger =0;	// HashCode binary
-        int indexOfBlock =0;	// index number of 12Nt blocks
+        int indexOfBlock =0;	// index number of 15Nt blocks
         int valueNX =0;
 
         /* positive strain */
@@ -153,7 +154,7 @@ public class BatchAlignPipe implements Serializable{
             pAlign.singleNtBit[i] = param.alphaCode[currentNt];
             valueNX += param.alphaCodeNNNNN[currentNt]; // N and X and others... have 1 value while Nts has 0 value
 
-            if ((i+1)%12 == 0){	// Initial another 12 Nt block
+            if ((i+1)%15 == 0){	// Initial another 15 Nt block
                 pAlign.bRead[indexOfBlock] = bInteger;
                 indexOfBlock++;
                 bInteger=0;
@@ -165,8 +166,8 @@ public class BatchAlignPipe implements Serializable{
         /* Add A\N\X value to fulfil last block */
         /* Doesn`t matter what`s been add, */
         /* because later binary operaion will shift them out */
-        if (rInfo.readSize%12!=0){
-            bInteger<<=24-(rInfo.readSize%12)*2;
+        if (rInfo.readSize%15!=0){
+            bInteger<<=30-(rInfo.readSize%15)*2;
             pAlign.bRead[indexOfBlock] = bInteger;
         }
 
@@ -180,15 +181,15 @@ public class BatchAlignPipe implements Serializable{
             bInteger|=param.alphaCodeComplement[currentNt];
 
             pAlign.singleNtBitComplement[i-1]=param.alphaCodeComplement[currentNt];
-            if (i%12==0){
+            if (i%15==0){
                 pAlign.bRevRead[indexOfBlock] = bInteger;
                 indexOfBlock++;
                 bInteger=0;
             }
         }
 
-        if (rInfo.readSize%12!=0){
-            bInteger<<=24-(rInfo.readSize%12)*2;
+        if (rInfo.readSize%15!=0){
+            bInteger<<=30-(rInfo.readSize%15)*2;
             pAlign.bRevRead[indexOfBlock] = bInteger;
         }
 
@@ -197,14 +198,14 @@ public class BatchAlignPipe implements Serializable{
 
     private void getKmers(int length){
         for (int i=0; i<length - param.kmerSize + 1; i++){
-            int j = (i%12 + param.kmerSize)*2; // kmer relative end position on a 12Nt block
-            pAlign.kmers[i]= j<=24	// the same operation with load Reference kmer binaries
-                    ? pAlign.bRead[i/12]>>(24-j)&param.kmerBits
-                    : (pAlign.bRead[i/12]<<(j-24)|pAlign.bRead[i/12+1]>>48-j)&param.kmerBits;
+            int j = (i%15 + param.kmerSize)*2; // kmer relative end position on a 15Nt block
+            pAlign.kmers[i]= j<=30	// the same operation with load Reference kmer binaries
+                    ? pAlign.bRead[i/15]>>(30-j)&param.kmerBits
+                    : (pAlign.bRead[i/15]<<(j-30)|pAlign.bRead[i/15+1]>>60-j)&param.kmerBits;
 
-            pAlign.revKmers[i]= j<=24
-                    ? pAlign.bRevRead[i/12]>>(24-j)&param.kmerBits
-                    : (pAlign.bRevRead[i/12]<<(j-24)|pAlign.bRevRead[i/12+1]>>48-j)&param.kmerBits;
+            pAlign.revKmers[i]= j<=30
+                    ? pAlign.bRevRead[i/15]>>(30-j)&param.kmerBits
+                    : (pAlign.bRevRead[i/15]<<(j-30)|pAlign.bRevRead[i/15+1]>>60-j)&param.kmerBits;
         }
     }
 
@@ -224,7 +225,7 @@ public class BatchAlignPipe implements Serializable{
         CandidateBlock mRefBlock;
         Qgram qGram;
         List<Qgram> qGramSort = new ArrayList<Qgram>();
-        String outputLine = "";
+        String outputLine = "1";
         List<String> alignResult = new ArrayList<String>();
         reportRepeatHits=1;
 
@@ -233,10 +234,10 @@ public class BatchAlignPipe implements Serializable{
         if (rInfo.readSize >= param.skipThreshold) {kmerSkip =2;} // for longer than 1000, 2bps
 
         if ((param.chains == 0) || (param.chains == 1)){
-            getReadKmerHits(rInfo.readSize, kmerSkip);
+            int pigeonfilter = getReadKmerHits(rInfo.readSize, kmerSkip);
 
             if (param.readIdentity >= 94){
-                if (pAlign.kmerHits.size() >= pAlign.bestPigeon){
+                if (pigeonfilter >= pAlign.bestPigeon){
                     Collections.sort(pAlign.kmerHits);
                     getRefCandidateBlockWithPigeon(rInfo.readSize);
                 }
@@ -262,10 +263,10 @@ public class BatchAlignPipe implements Serializable{
 
                 j =0;
                 for (k=mRefBlock.begin; k<mRefBlock.end;k++){
-                    l = (k%12 + 1)*2; // block bit relative position
-                    pAlign.mRefBlockNtBit[j] = l <=24
-                            ? (m[k/12] >> (24-l))&3
-                            : (m[k/12]<<(l-24)|m[k/12+1]>>(48-l))&3;
+                    l = (k%15 + 1)*2; // block bit relative position
+                    pAlign.mRefBlockNtBit[j] = l <=30
+                            ? (m[k/15] >> (30-l))&3
+                            : (m[k/15]<<(l-30)|m[k/15+1]>>(60-l))&3;
                     j++;
                 }
 
@@ -290,10 +291,10 @@ public class BatchAlignPipe implements Serializable{
                 m = BBList.get(qGram.chr).s;
                 j = 0;
                 for(k=qGram.begin; k<qGram.end; k++){
-                    l = (k%12 + 1)*2;
-                    pAlign.mRefBlockNtBit[j] = l <=24
-                            ? (m[k/12] >> (24-l))&3
-                            : (m[k/12] << (l-24)|m[k/12+1]>>(48-l))&3;
+                    l = (k%15 + 1)*2;
+                    pAlign.mRefBlockNtBit[j] = l <=30
+                            ? (m[k/15] >> (30-l))&3
+                            : (m[k/15] << (l-30)|m[k/15+1]>>(60-l))&3;
                     j++;
                 }
 
@@ -338,8 +339,8 @@ public class BatchAlignPipe implements Serializable{
                         highestIdentity = readIdentityDouble;
                         outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
                                 + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
-                                + "\t-\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
-                                + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1) + "\n";
+                                + "\t+\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
+                                + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1);
                     }
                 }else {
 
@@ -353,10 +354,10 @@ public class BatchAlignPipe implements Serializable{
         } // end of positive strand
 
         if ((param.chains == 0) || (param.chains == 2)){
-            getRevReadKmerHits(rInfo.readSize, kmerSkip);
+            int pigeonRevfilter = getRevReadKmerHits(rInfo.readSize, kmerSkip);
 
             if (param.readIdentity >= 94){
-                if (pAlign.kmerHits.size() >= pAlign.bestPigeon){
+                if (pigeonRevfilter >= pAlign.bestPigeon){
                     Collections.sort(pAlign.kmerHits);
                     getRefCandidateBlockWithPigeon(rInfo.readSize);
                 }else{
@@ -386,10 +387,10 @@ public class BatchAlignPipe implements Serializable{
                 m = BBList.get(mRefBlock.chr).s;
                 j =0;
                 for (k=mRefBlock.begin; k<mRefBlock.end;k++){
-                    l = (k%12 + 1)*2; // block bit relative position
-                    pAlign.mRefBlockNtBit[j] = l <=24
-                            ? (m[k/12] >> (24-l))&3
-                            : (m[k/12]<<(l-24)|m[k/12+1]>>(48-l))&3;
+                    l = (k%15 + 1)*2; // block bit relative position
+                    pAlign.mRefBlockNtBit[j] = l <=30
+                            ? (m[k/15] >> (30-l))&3
+                            : (m[k/15]<<(l-30)|m[k/15+1]>>(60-l))&3;
                     j++;
                 }
                                 /* applying q Gram filter and revise band width */
@@ -413,10 +414,10 @@ public class BatchAlignPipe implements Serializable{
                 m = BBList.get(qGram.chr).s;
                 j = 0;
                 for(k=qGram.begin; k<qGram.end; k++){
-                    l = (k%12 + 1)*2;
-                    pAlign.mRefBlockNtBit[j] = l <=24
-                            ? (m[k/12] >> (24-l))&3
-                            : (m[k/12] << (l-24)|m[k/12+1]>>(48-l))&3;
+                    l = (k%15 + 1)*2;
+                    pAlign.mRefBlockNtBit[j] = l <=30
+                            ? (m[k/15] >> (30-l))&3
+                            : (m[k/15] << (l-30)|m[k/15+1]>>(60-l))&3;
                     j++;
                 }
 
@@ -456,8 +457,7 @@ public class BatchAlignPipe implements Serializable{
                         outputLine = rInfo.readName + "\t" + rInfo.readSize + "nt\t" + formatEValue + "\t"
                                 + readCoverage + "\t" + (pAlign.fromFirst + 1) + "\t" + (pAlign.endFirst + 1)
                                 + "\t-\t" + formatIdentity + "\t" + listTitle.get(qGram.chr).name
-                                + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1) + "\n";
-
+                                + "\t" + (qGram.begin + pAlign.fromSecond + 1) + "\t" + (qGram.begin + pAlign.endSecond + 1);
                     }
                 }else {
 
@@ -468,19 +468,25 @@ public class BatchAlignPipe implements Serializable{
         } // end of negative strand
 
         if (param.reportRepeatHits == 1){
-            alignResult.add(outputLine);
+            if (!outputLine.equals("1")) {
+                alignResult.add(outputLine);
+            }else{
+                alignResult.add(rInfo.readName + "\t" + rInfo.readSize + "nt\t" + 1 + "\t" + 0 + "\t" + 0 + "\t" + 0 + "\t-\t" + 0 + "\t" + "*" + "\t" + 0 + "\t" + 0);
+            }
         }
         return alignResult;
     }
 
-    private void getReadKmerHits(int length, int kmerSkip){
+    private int getReadKmerHits(int length, int kmerSkip){
         int kmerInteger;
+        int kmerNumber=0;
         for (int i=0; i<length-param.kmerSize+1; i+=kmerSkip){
             kmerInteger = pAlign.kmers[i];
 
             if ( (index[kmerInteger].n)==0 )
             {continue;}
 
+            kmerNumber++;
             for(int j=0; j<index[kmerInteger].n; j++){
                 int currentLoc = index[kmerInteger].loc[j] - i; // kmer match here, -i is the starting position of read
                 currentLoc = currentLoc>=0 ? currentLoc : 0;
@@ -488,16 +494,19 @@ public class BatchAlignPipe implements Serializable{
                 pAlign.kmerHits.add(IdAndLoc);
             }
         }
+        return kmerNumber;
     }
 
-    private void getRevReadKmerHits(int length, int kmerSkip){
+    private int getRevReadKmerHits(int length, int kmerSkip){
         int kmerInteger;
+        int kmerRevNumber=0;
         for (int i=0; i<length-param.kmerSize+1; i+=kmerSkip){
             kmerInteger = pAlign.revKmers[i];
 
             if ( (index[kmerInteger].n)==0 )
             {continue;}
 
+            kmerRevNumber++;
             for(int j=0; j<index[kmerInteger].n; j++){
                 int currentLoc = index[kmerInteger].loc[j] - i;
                 currentLoc = currentLoc>=0 ? currentLoc : 0;
@@ -505,6 +514,7 @@ public class BatchAlignPipe implements Serializable{
                 pAlign.kmerHits.add(IdAndLoc);
             }
         }
+        return kmerRevNumber;
     }
 
     private void getRefCandidateBlockWithPigeon(int length){
@@ -513,7 +523,7 @@ public class BatchAlignPipe implements Serializable{
         int loc, start;
         CandidateBlock cRefBlock;
 
-        int pigeonHits = 0;
+        int pigeonHits = 1;
 
         for (int i =1; i<pAlign.kmerHits.size(); i++){
             if( (pAlign.kmerHits.get(i)-fHit) <= param.kmerSize){
@@ -535,7 +545,7 @@ public class BatchAlignPipe implements Serializable{
             }else{
                 fHit = pAlign.kmerHits.get(i);
                 markNewBlock = 0;
-                pigeonHits = 0;
+                pigeonHits = 1;
             }
         }
     }

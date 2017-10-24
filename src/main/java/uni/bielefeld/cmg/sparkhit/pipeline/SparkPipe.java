@@ -74,6 +74,7 @@ public class SparkPipe implements Serializable {
     private SparkConf setSparkConfiguration(){
         SparkConf conf = new SparkConf().setAppName("SparkHit");
         conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+        conf.set("spark.kryo.referenceTracking", "false");
         conf.set("spark.kryo.registrator", "uni.bielefeld.cmg.sparkhit.serializer.SparkKryoRegistrator");
 
         return conf;

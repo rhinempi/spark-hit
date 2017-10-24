@@ -271,6 +271,16 @@ public class Pipelines implements Pipeline, Serializable{
         }
     }
 
+    public void sparkMapper(){
+        SparkPipe sPipe = new SparkPipe();
+        sPipe.setParam(param);
+        if (param.inputFqLinePath != null){
+            sPipe.sparkLineFile();
+        }else{
+            sPipe.spark();
+        }
+    }
+
     public void sparkReporter(){
         SparkReportPipe sRPipe = new SparkReportPipe();
         sRPipe.setParam(param);

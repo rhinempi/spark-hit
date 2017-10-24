@@ -23,17 +23,16 @@ package uni.bielefeld.cmg.sparkhit.util;
 
 import org.apache.commons.cli.*;
 
-import javax.xml.bind.annotation.XmlElementDecl;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Parameter {
+public class ParameterForMapper {
     private String[] arguments;
     private InfoDumper info = new InfoDumper();
 
-    public Parameter(String[] arguments) throws IOException, ParseException {
+    public ParameterForMapper(String[] arguments) throws IOException, ParseException {
         this.arguments = arguments;
     }
 
@@ -140,7 +139,7 @@ public class Parameter {
                 .create(OVERLAP));
 
         parameter.addOption(OptionBuilder.withArgName("identity threshold")
-                .hasArg().withDescription("minimal identity for recruiting a read, default 75 (sensitive mode, fast mode starts from 94)")
+                .hasArg().withDescription("minimal identity for recruiting a read, default 94 (sensitive mode, fast mode starts from 94)")
                 .create(IDENTITY));
 
         parameter.addOption(OptionBuilder.withArgName("coverage threshold")
@@ -208,12 +207,12 @@ public class Parameter {
 			/* Set Object cl of CommandLine class for Parameter storage */
             CommandLine cl = parser.parse(parameter, arguments, true);
             if (cl.hasOption(HELP)) {
-                help.printHelp();
+                help.printMapperHelp();
                 System.exit(0);
             }
 
             if (cl.hasOption(HELP2)){
-                help.printHelp();
+                help.printMapperHelp();
                 System.exit(0);
             }
 
@@ -225,8 +224,9 @@ public class Parameter {
 
             String value;
 
+            param.readIdentity =94;
             if ((value = cl.getOptionValue(IDENTITY)) != null){
-                if (Integer.decode(value) >= 0 || Integer.decode(value) <= 100){
+                if (Integer.decode(value) >= 94 || Integer.decode(value) <= 100){
                     param.readIdentity = Integer.decode(value);
                     if (param.readIdentity >= 94){
                         param.setKmerOverlap(0);
@@ -234,7 +234,7 @@ public class Parameter {
                     }
                 }else{
                     throw new RuntimeException("Parameter " + IDENTITY +
-                            " should not be integer of %");
+                            " should be larger than 94 for mapper, for lower idenity please use sparkhit recruiter");
                 }
             }
 
@@ -342,7 +342,7 @@ public class Parameter {
                 param.inputFqLinePath = value;
                 param.inputFqPath = value;
             }else {
-                help.printHelp();
+                help.printMapperHelp();
                 System.exit(0);
                 //throw new IOException("Input query file not specified.\nUse -help for list of options");
             }

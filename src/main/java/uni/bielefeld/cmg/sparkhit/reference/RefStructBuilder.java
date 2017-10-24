@@ -120,7 +120,7 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     /* creat binary sequence */
 	/* convert string sequence to binary storage */
 	/* one Nucleotide takes 2 bits */
-	/* 12 Nts stored as a block of 24 bits */
+	/* 15 Nts stored as a block of 30 bits */
 	/* (but stored as Integer (primitive type 32 bits)) */
 
     /**
@@ -129,12 +129,12 @@ public class RefStructBuilder implements RefStructManager, Serializable{
      */
     public BinaryBlock getBinarySeq(){
 
-   		/* 12nt form a block of 24bits, but stored in a 32bit Integer primitive tpye */
-		/* +11 to built a block, +2 for 3`end overflow when extract binary code */
+   		/* 15nt form a block of 30bits, but stored in a 32bit Integer primitive tpye */
+		/* +14 to built a block, +2 for 3`end overflow when extract binary code */
         BinaryBlock bBlock = new BinaryBlock();
-        bBlock.n = (length + 11) / 12 + 2;
+        bBlock.n = (length + 14) / 15 + 2;
 
-        int remainder = bBlock.n * 12 - length; // how many cells left for the last block
+        int remainder = bBlock.n * 15 - length; // how many cells left for the last block
         if (remainder > 0 ){
             StringBuilder Nremainder = repeatSb("N", remainder);
             seqBuilder.append(Nremainder);
@@ -143,9 +143,9 @@ public class RefStructBuilder implements RefStructManager, Serializable{
         bBlock.s = new int[bBlock.n]; // initiating bBlock.n blocks, stored as Integer in bBlock.s array
 
         int bBlockSize = 0;
-        for (int i = 0; i < bBlock.n ; i++, bBlockSize += 12){
+        for (int i = 0; i < bBlock.n ; i++, bBlockSize += 15){
             bBlock.s[i] = 0;
-            for (int j = 0; j <12 ; j++){
+            for (int j = 0; j <15 ; j++){
                 bBlock.s[i] <<= 2;
                 char currentNt = seqBuilder.charAt(bBlockSize + j);
                 bBlock.s[i] |= alphaCode[currentNt];
@@ -309,14 +309,14 @@ public class RefStructBuilder implements RefStructManager, Serializable{
             m = BBList.get(b.id).s;
 
             for (j = b.begin; j< (b.end-sizeKmers+1); j += skip){
-                l = (j%12 + sizeKmers)*2;	// RELATIVE location of the last kmer Nt
+                l = (j%15 + sizeKmers)*2;	// RELATIVE location of the last kmer Nt
 
-                kmerInteger = l<=24		// whether the end of the kmer is in the same block with the start of the kmer
+                kmerInteger = l<=30		// whether the end of the kmer is in the same block with the start of the kmer
 								/* |------------|     binary block                    */
 								/*    ---------       kmer                            */
 								/*  -----------.      binary shifting                 */
 								/*  ..---------.      &, AND operation with maximum of kmerBits */
-                        ? (m[j/12] >> (24-l))
+                        ? (m[j/15] >> (30-l))
                         &param.kmerBits
 								/* |------------|------------|     binary block       */
 								/*            ---------            kmer		      */
@@ -324,7 +324,7 @@ public class RefStructBuilder implements RefStructManager, Serializable{
 								/*               ------......      second, binary right shift   */
 								/*  -------------------......      |, OR operation    */
 								/*  ..........---------......      &, AND operation with maximum*/
-                        : (m[j/12] << (l-24) | m[j/12+1] >> (48-l))
+                        : (m[j/15] << (l-30) | m[j/15+1] >> (60-l))
                         &param.kmerBits;
 
                 index[kmerInteger].n++;
@@ -336,11 +336,11 @@ public class RefStructBuilder implements RefStructManager, Serializable{
 										/*                   ---------        skip out of block, last Nt unlog */
                 j = b.end - sizeKmers;				// <--             ---------          move back to log the last kmer
                 //				      So here the last kmer migh skip smaller than sizeKmers - param.kmerOverlap
-                l = (j%12 + sizeKmers) * 2;
-                kmerInteger = l<=24
-                        ? (m[j/12] >> (24-l))
+                l = (j%15 + sizeKmers) * 2;
+                kmerInteger = l<=30
+                        ? (m[j/15] >> (30-l))
                         &param.kmerBits
-                        : (m[j/12] << (l-24) | m[j/12+1] >> (48-l))
+                        : (m[j/15] << (l-30) | m[j/15+1] >> (60-l))
                         &param.kmerBits;
 
                 index[kmerInteger].n++;
@@ -374,13 +374,13 @@ public class RefStructBuilder implements RefStructManager, Serializable{
             m = BBList.get(b.id).s;
 
             for (j=b.begin; j < (b.end - sizeKmers +1); j+=skip){
-                l = (j%12 + sizeKmers)*2;
+                l = (j%15 + sizeKmers)*2;
 
 				/* the same as initiating index */
-                kmerInteger = l<=24
-                        ? (m[j/12] >> (24-l))
+                kmerInteger = l<=30
+                        ? (m[j/15] >> (30-l))
                         &param.kmerBits
-                        : (m[j/12] << (l-24) | m[j/12+1] >> (48-l))
+                        : (m[j/15] << (l-30) | m[j/15+1] >> (60-l))
                         &param.kmerBits;
 
 				/* index loci is an array now. So */
@@ -392,11 +392,11 @@ public class RefStructBuilder implements RefStructManager, Serializable{
             if ( ((b.end-b.begin) - sizeKmers) % skip != 0){
                 j = b.end - sizeKmers;
 
-                l = (j%12 + sizeKmers) * 2;
-                kmerInteger = l<=24
-                        ? (m[j/12] >> (24-l))
+                l = (j%15 + sizeKmers) * 2;
+                kmerInteger = l<=30
+                        ? (m[j/15] >> (30-l))
                         &param.kmerBits
-                        : (m[j/12] << (l-24) | m[j/12+1] >> (48-l))
+                        : (m[j/15] << (l-30) | m[j/15+1] >> (60-l))
                         &param.kmerBits;
 
                 index[kmerInteger].loc[index[kmerInteger].n] = j;
