@@ -27,6 +27,14 @@ import java.util.List;
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * A data structure class that stores all parameters for sequence alignment.
+ *
+ * @author  Liren Huang
+ * @version %I%, %G%
+ * @see
+ */
 public class AlignmentParameter implements Serializable{
     final public int maxReadLength = 500;
     final public int maxBlockLength = 2*maxReadLength +15*3;
@@ -75,6 +83,11 @@ public class AlignmentParameter implements Serializable{
     public int identity;
     public int bestScore;
 
+    /**
+     * A constructor that construct an object of {@link AlignmentParameter} class.
+     *
+     * @param param {@link DefaultParam}.
+     */
     public AlignmentParameter (DefaultParam param){
         this.alignLength = param.alignLength;
         this.bestNas = param.bestNas;

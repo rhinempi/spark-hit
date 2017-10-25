@@ -1,16 +1,12 @@
-package uni.bielefeld.cmg.sparkhit.struct;
-
-import java.io.Serializable;
-
 /**
- * Created by Liren Huang on 13/01/16.
+ * Created by Liren Huang on 25.10.17.
  *
- *      SparkHit
+ * Sparkhit
  *
  * Copyright (c) 2015-2015:
  * Liren Huang     <huanglr at cebitec.uni-bielefeld.de>
  *
- * SparkHit is free software: you can redistribute it and/or modify it
+ * FragRec is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -25,22 +21,10 @@ import java.io.Serializable;
  */
 
 /**
- * A data structure class that stores the locus of each k-mer match.
+ * This package contains different classes for object serialization.
  *
  * @author  Liren Huang
  * @version %I%, %G%
  * @see
  */
-public class HitInfo implements Serializable {
-    public int chr = 0;
-    public int loc = 0;
-
-    /**
-     * A constructor that construct an object of {@link HitInfo} class.
-     */
-    public HitInfo(){
-        /**
-         * a data structure for storing K-mer hit info
-         */
-    }
-}
+package uni.bielefeld.cmg.sparkhit.serializer;

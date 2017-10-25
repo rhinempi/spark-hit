@@ -361,14 +361,29 @@ public class Pipelines implements Pipeline, Serializable{
         this.inputFastqUnitBuffer = inputFastqUnitBuffer;
     }
 
+    /**
+     * This method sets correspond parameters.
+     *
+     * @param param {@link DefaultParam} is the object for command line parameters.
+     */
     public void setParameter(DefaultParam param){
         this.param = param;
     }
 
+    /**
+     * This method sets input buffer reader.
+     *
+     * @param inputBufferedReader a {@link BufferedReader} to read input data.
+     */
     public void setInput(BufferedReader inputBufferedReader){
 
     }
 
+    /**
+     * This method sets output buffer writer.
+     *
+     * @param outputBufferedWriter a {@link BufferedWriter} to write to an output file.
+     */
     public void setOutput(BufferedWriter outputBufferedWriter){
         this.outputBufferedWriter = outputBufferedWriter;
     }

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Liren Huang on 17/02/16.
  *
- *      spark-hit_standalone
+ *      SparkHit
  *
  * Copyright (c) 2015-2015
  *      Liren Huang      <huanglr at cebitec.uni-bielefeld.de>
@@ -40,7 +40,13 @@ import java.util.regex.Pattern;
  *
  */
 
-
+/**
+ * Returns an object for building reference index.
+ *
+ * @author  Liren Huang
+ * @version %I%, %G%
+ * @see
+ */
 public class RefStructBuilder implements RefStructManager, Serializable{
     /* parameters */
     private DefaultParam param;
@@ -67,8 +73,10 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     private StringBuilder seqBuilder = new StringBuilder();
 
     /**
+     * This method sets all correspond parameters for reference
+     * data structure construction.
      *
-     * @param param
+     * @param param {@link DefaultParam}.
      */
     public void setParameter(DefaultParam param){
         this.param = param;
@@ -79,8 +87,9 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     }
 
     /**
+     * This method loads the first line of a fasta file.
      *
-     * @param fasta
+     * @param fasta {@link BufferedReader}.
      */
     private void loadFirstLine(BufferedReader fasta){
         String line;
@@ -104,9 +113,10 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     }
 
     /**
+     * This method uses {@link StringBuilder} to concatenate repeat sequences.
      *
-     * @param s
-     * @param n
+     * @param s a reference sequence string.
+     * @param n the size of the repeat.
      * @return
      */
     public StringBuilder repeatSb(String s, int n){
@@ -124,8 +134,9 @@ public class RefStructBuilder implements RefStructManager, Serializable{
 	/* (but stored as Integer (primitive type 32 bits)) */
 
     /**
+     * This method transforms a nucletotide sequence from a string type to a binary type.
      *
-     * @return
+     * @return {@link BinaryBlock}.
      */
     public BinaryBlock getBinarySeq(){
 
@@ -156,8 +167,9 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     }
 
     /**
+     * This method loads the all contigs from a reference genome.
      *
-     * @param fasta
+     * @param fasta {@link BufferedReader}.
      */
     private void loadContig(BufferedReader fasta){
         String line;
@@ -195,10 +207,11 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     }
 
     /**
+     * This method returns the index of a specified pattern.
      *
-     * @param validNt
-     * @param fromIndex
-     * @return
+     * @param validNt the pattern {@link Pattern}, which its index is searched against.
+     * @param fromIndex the starting point for searching the index.
+     * @return the index of the searching result.
      */
     private int myIndexOfAny(Pattern validNt, int fromIndex){
         int position = length + 1;	// outside, longer than contiglength
@@ -265,8 +278,9 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     }
 
     /**
+     * This method load the genome sequences from the input reference file.
      *
-     * @param inputFaPath
+     * @param inputFaPath the full path of the input file for reference genomes.
      */
     public void loadRef (String inputFaPath){
         ReadFasta refReader = new ReadFasta();
@@ -407,7 +421,8 @@ public class RefStructBuilder implements RefStructManager, Serializable{
     }
 
     /**
-     *
+     * This method build the reference index based on the input
+     * reference genomes.
      */
     public void buildIndex(){
         initialIndex();

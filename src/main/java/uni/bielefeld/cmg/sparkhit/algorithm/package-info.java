@@ -1,15 +1,15 @@
-package uni.bielefeld.cmg.sparkhit.reference;
+
 
 
 /**
- * Created by Liren Huang on 17/02/16.
+ * Created by Liren Huang on 25.10.17.
  *
- *      spark-hit_standalone
+ *      SparkHit
  *
  * Copyright (c) 2015-2015
  *      Liren Huang      <huanglr at cebitec.uni-bielefeld.de>
  * 
- * spark-hit_standalone is free software: you can redistribute it and/or modify it
+ * SparkHit is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -24,16 +24,13 @@ package uni.bielefeld.cmg.sparkhit.reference;
  *
  */
 
+
 /**
- * This is an interface for the input and output of reference genomes.
+ * This package contains different classes for varies algorithms.
  *
  * @author  Liren Huang
  * @version %I%, %G%
  * @see
  */
-public interface RefIOManager {
-    /**
-     * Use "io" package, ReadFasta class instead
-     */
 
-}
+package uni.bielefeld.cmg.sparkhit.algorithm;

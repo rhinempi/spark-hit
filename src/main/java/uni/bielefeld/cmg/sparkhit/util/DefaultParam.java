@@ -24,8 +24,19 @@ import java.util.regex.Pattern;
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * A data structure class that stores all default parameters.
+ *
+ * @author  Liren Huang
+ * @version %I%, %G%
+ * @see
+ */
 public class DefaultParam implements Serializable{
 
+    /**
+     * A constructor that construct an object of {@link DefaultParam} class.
+     */
     public DefaultParam (){
         /**
          * This is a class of data structure which stores the default parameters
@@ -115,6 +126,11 @@ public class DefaultParam implements Serializable{
     public double lambda = 1.33;
     public double pairAlign = 1.12;
 
+    /**
+     * This method initiates the ASCII code for each nucleotide.
+     *
+     * @return an array of values for each nucleotide.
+     */
     public int[] initialAlphaCode(){
         int[] alphaCodeInitial = new int[256];
         for (int i=0; i<256; i++){
@@ -128,6 +144,11 @@ public class DefaultParam implements Serializable{
         return alphaCodeInitial;
     }
 
+    /**
+     * This method initiates the ASCII code for the reverse-complement of each nucleotide.
+     *
+     * @return an array of values for the reverse-complement of each nucleotide.
+     */
     public int[] initialAlphaCodeComplement(){
         int[] alphaCodeComplementInitial = new int[256];
         for (int i=0; i<256; i++){
@@ -140,6 +161,11 @@ public class DefaultParam implements Serializable{
         return alphaCodeComplementInitial;
     }
 
+    /**
+     * This method initiates the codes for unidentified nucleotides.
+     *
+     * @return an array of value for the unindentified necleotides.
+     */
     public int[] initialNNNNNFilter(){
         int[] alphaCodeNNNNNInitial = new int[256];
         for (int i=0; i<256; i++){
@@ -153,12 +179,23 @@ public class DefaultParam implements Serializable{
     }
 
     /* change kmer length and maximum bit */
+
+    /**
+     * This method initiates the K-mer size parameter.
+     *
+     * @param k the size of the k-mer.
+     */
     public  void setKmerSize(int k){
         kmerSize = k;
         kmerBits = (1 << (kmerSize*2))-1;
         maximumKmerNum = 1<<(kmerSize*2); // re-initial maximumKmerNum according to kmerSize
     }
 
+    /**
+     * This method initiates the overlap between k-mers.
+     *
+     * @param o the size of the overlap between k-mers.
+     */
     public void setKmerOverlap(int o){
         kmerOverlap = o;
     }

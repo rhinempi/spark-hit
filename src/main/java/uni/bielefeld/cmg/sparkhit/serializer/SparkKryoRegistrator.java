@@ -1,13 +1,11 @@
 package uni.bielefeld.cmg.sparkhit.serializer;
 
+import com.esotericsoftware.kryo.Kryo;
 import org.apache.spark.serializer.KryoRegistrator;
 import uni.bielefeld.cmg.sparkhit.matrix.ScoreMatrix;
 import uni.bielefeld.cmg.sparkhit.reference.RefStructBuilder;
 import uni.bielefeld.cmg.sparkhit.struct.*;
 import uni.bielefeld.cmg.sparkhit.util.DefaultParam;
-import com.esotericsoftware.kryo.Kryo;
-
-import java.util.ArrayList;
 //import org.apache.spark.serializer.KryoRegistrator;
 
 /**
