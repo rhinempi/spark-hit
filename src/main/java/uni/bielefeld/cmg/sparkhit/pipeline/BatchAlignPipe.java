@@ -37,6 +37,14 @@ import java.util.List;
  */
 
 
+/**
+ * Returns an object for recruiting one read to the reference genomes.
+ * This is the main pipeline for fragment recruitment.
+ *
+ * @author  Liren Huang
+ * @version %I%, %G%
+ * @see
+ */
 public class BatchAlignPipe implements Serializable{
     private DefaultParam param;
     private AlignmentParameter pAlign;
@@ -51,8 +59,9 @@ public class BatchAlignPipe implements Serializable{
 
 
     /**
+     * A constructor that construct an object of {@link BatchAlignPipe} class.
      *
-     * @param param
+     * @param param the preset parameters.
      */
     public BatchAlignPipe(DefaultParam param){
         this.param = param;
@@ -61,11 +70,20 @@ public class BatchAlignPipe implements Serializable{
 
     /**
      *
+     * A constructor that construct an object of {@link BatchAlignPipe} class.
+     *
+     * no parameter needed.
      */
     public BatchAlignPipe(){
 
     }
 
+    /**
+     * This method recruits one sequencing read to the reference genomes.
+     *
+     * @param read {@link readInfo}.
+     * @return the recruitment result and the match info.
+     */
     public String recruit (readInfo read){
         List<String> alignResult;
         String alignmentResult = "";
@@ -102,6 +120,14 @@ public class BatchAlignPipe implements Serializable{
         return alignmentResult;
     }
 
+    /**
+     * This method recruits one sequencing read to the reference genomes.
+     * Different from {@link BatchAlignPipe#recruit}, this method returns
+     * a list of recruitment results.
+     *
+     * @param read a sequencing read in {@link String}.
+     * @return a list of recruitment results and the match info.
+     */
     public List<String> sparkRecruit (String read){
         List<String> alignmentResult = new ArrayList<String>();
 
@@ -995,15 +1021,28 @@ public class BatchAlignPipe implements Serializable{
         return 1;
     } // end of bandAlignment
 
+    /**
+     * This method sets the input parameters.
+     *
+     * @param param {@link DefaultParam}.
+     */
     public void setParam(DefaultParam param){
         this.param = param;
         setAlignmentParameter();
     }
 
+    /**
+     * This method sets the alignment parameters {@link AlignmentParameter}.
+     */
     public void setAlignmentParameter(){
         this.pAlign = new AlignmentParameter(param);
     }
 
+    /**
+     * This method passes the reference index to the recruitment pipeline.
+     *
+     * @param ref the reference index.
+     */
     public void setStruct(RefStructBuilder ref){
         this.BBList = ref.BBList;
         this.listTitle = ref.title;
@@ -1012,6 +1051,11 @@ public class BatchAlignPipe implements Serializable{
         this.totalNum = ref.totalNum;
     }
 
+    /**
+     * This method sets the scoring matrix.
+     *
+     * @param mat the scoring matrix {@link ScoreMatrix}.
+     */
     public void setMatrix(ScoreMatrix mat){
         this.mat = mat;
     }

@@ -23,27 +23,33 @@ import java.util.Iterator;
 
 /**
  * Created by Liren Huang on 17/03/16.
- * <p/>
- * SparkHit
- * <p/>
+ *
+ *      SparkHit
+ *
  * Copyright (c) 2015-2015
  * Liren Huang      <huanglr at cebitec.uni-bielefeld.de>
- * <p/>
+ *
  * SparkHit is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
- * <p/>
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more detail.
- * <p/>
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses>.
  */
 
-
+/**
+ * Returns an object for running the Sparkhit piper pipeline.
+ *
+ * @author  Liren Huang
+ * @version %I%, %G%
+ * @see
+ */
 public class SparkScriptPipe implements Serializable{
     private DefaultParam param;
     private InfoDumper info = new InfoDumper();
@@ -56,6 +62,9 @@ public class SparkScriptPipe implements Serializable{
         return conf;
     }
 
+    /**
+     * runs the Sparkhit pipeline using Spark RDD operations.
+     */
     public void spark() {
         SparkConf conf = setSparkConfiguration();
         info.readMessage("Initiating Spark context ...");
@@ -66,9 +75,14 @@ public class SparkScriptPipe implements Serializable{
 
         JavaRDD<String> FastqRDD;
 
-
-
         class LineToFastq implements Function<String, String>, Serializable{
+
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s an input of a fastq unit in a line.
+             * @return a fastq unit.
+             */
             public String call(String s){
                 String[] fourMusketeers = s.split("\\t");
                 if (fourMusketeers[3]!=null) {
@@ -84,6 +98,12 @@ public class SparkScriptPipe implements Serializable{
         }
 
         class RDDUnitFilter implements Function<String, Boolean>, Serializable{
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s an input line of the external tool`s result.
+             * @return to be filtered or not.
+             */
             public Boolean call(String s){
                 if (s != null) {
                     return true;
@@ -95,6 +115,12 @@ public class SparkScriptPipe implements Serializable{
         }
 
         class FastqUnitFilter implements Function<String, Boolean>, Serializable{
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s an input fastq unit.
+             * @return to be filtered or not.
+             */
             public Boolean call(String s){
                 if (s.startsWith("@")){
                     return true;
@@ -107,6 +133,13 @@ public class SparkScriptPipe implements Serializable{
         class FastqFilterWithQual implements Function<String, String>, Serializable{
             String line = "";
             int lineMark = 0;
+
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s an input line of the fastq file.
+             * @return a fastq unit.
+             */
             public String call(String s) {
                 if (lineMark == 2) {
                     lineMark++;
@@ -133,6 +166,13 @@ public class SparkScriptPipe implements Serializable{
         class FastqFilterToFasta implements Function<String, String>, Serializable{
             String line = "";
             int lineMark = 0;
+
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s an input line of the fastq file.
+             * @return a fasta unit.
+             */
             public String call(String s){
                 if (s.startsWith("@")){
                     line = s;
@@ -150,6 +190,13 @@ public class SparkScriptPipe implements Serializable{
         }
 
         class LineFilterToFasta implements Function<String, String>, Serializable{
+
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s an fastq unit of the line-based file.
+             * @return a fasta unit.
+             */
             public String call(String s){
                 String[] fourMusketeers = s.split("\\t");
                 if (fourMusketeers[1]!=null) {
@@ -163,6 +210,12 @@ public class SparkScriptPipe implements Serializable{
 
         if (param.filename){
             class LineTuple2String implements Function<Tuple2<String, String>, String>, Serializable{
+                /**
+                 * This function implements the Spark {@link Function}.
+                 *
+                 * @param s a fastq header with filename.
+                 * @return a concatenated fastq header.
+                 */
                 public String call(Tuple2<String, String> s){
                     if (s._2.startsWith("@")) {
                         return ("@" + s._1 + "|" + s._2);
@@ -175,6 +228,13 @@ public class SparkScriptPipe implements Serializable{
             class FastqTuple2String implements Function<Tuple2<String, String>, String>, Serializable{
                 String line = "";
                 int lineMark = 0;
+
+                /**
+                 * This function implements the Spark {@link Function}.
+                 *
+                 * @param s a fastq header with filename.
+                 * @return a fastq unit.
+                 */
                 public String call(Tuple2<String, String> s){
                     if (lineMark == 2) {
                         lineMark++;
@@ -199,6 +259,12 @@ public class SparkScriptPipe implements Serializable{
             }
 
             class RDDTaggedUnitFilter implements Function<String, Boolean>, Serializable{
+                /**
+                 * This function implements the Spark {@link Function}.
+                 *
+                 * @param s an input line of the external tool`s result.
+                 * @return to be filtered or not.
+                 */
                 public Boolean call(String s){
                     if (s != null) {
                         return true;
@@ -312,6 +378,11 @@ public class SparkScriptPipe implements Serializable{
         sc.stop();
     }
 
+    /**
+     * This method sets the input parameters.
+     *
+     * @param param {@link DefaultParam}.
+     */
     public void setParam(DefaultParam param){
         this.param = param;
     }

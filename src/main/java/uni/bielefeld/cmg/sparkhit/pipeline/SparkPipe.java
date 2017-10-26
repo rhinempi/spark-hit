@@ -52,7 +52,14 @@ import java.util.List;
  * with this program. If not, see <http://www.gnu.org/licenses>.
  */
 
-
+/**
+ * Returns an object for running the Sparkhit-recruiter pipeline.
+ * This is the main pipeline for fragment recruitment.
+ *
+ * @author  Liren Huang
+ * @version %I%, %G%
+ * @see
+ */
 public class SparkPipe implements Serializable {
     private long time;
     private DefaultParam param;
@@ -110,6 +117,11 @@ public class SparkPipe implements Serializable {
         return ref;
     }
 
+    /**
+     * This method builds the reference index.
+     *
+     * @return the reference index.
+     */
     public RefStructBuilder loadReference(){
         RefStructSerializer refSer = new RefStructSerializer();
         refSer.setParameter(param);
@@ -124,6 +136,9 @@ public class SparkPipe implements Serializable {
         return ref;
     }
 
+    /**
+     * This method transforms fastq format to line-based format.
+     */
     public void sparkFastqToLine(){
         SparkConf conf = setSparkConfiguration();
         JavaSparkContext sc = new JavaSparkContext(conf);
@@ -131,6 +146,12 @@ public class SparkPipe implements Serializable {
         JavaRDD<String> FastqRDD = sc.textFile(param.inputFqPath);
 
         class FastqFilter implements Function<String, Boolean>, Serializable{
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s an input string.
+             * @return the filtered result.
+             */
             public Boolean call(String s){
                 if (s != null){
           //          if (s.startsWith("@")){
@@ -147,6 +168,13 @@ public class SparkPipe implements Serializable {
         class FastqConcat implements Function<String, String>, Serializable{
             String line = "";
             int lineMark = 0;
+
+            /**
+             * This function implements the Spark {@link Function}.
+             *
+             * @param s the input fastq lines.
+             * @return a fastq unit.
+             */
             public String call(String s){
                 if (s.startsWith("@")){
                     line = s;
@@ -187,6 +215,12 @@ public class SparkPipe implements Serializable {
 
         if (param.filename){
             class Tuple2String implements Function<Tuple2<String, String>, String>, Serializable{
+                /**
+                 * This method concatenates fastq lines into one fastq unit.
+                 *
+                 * @param s {@link Tuple2}.
+                 * @return a string of a fastq unit.
+                 */
                 public String call(Tuple2<String, String> s){
                     return ("@" + s._1 + "|" + s._2);
                 }
@@ -261,6 +295,12 @@ public class SparkPipe implements Serializable {
 
             BatchAlignPipe bPipe = new BatchAlignPipe(broadParam.value());
 
+            /**
+             * This function implements the Spark {@link FlatMapFunction}.
+             *
+             * @param s an input string, usually a fastq unit.
+             * @return the result of fragment recruitment.
+             */
             public Iterator<String> call(String s){
 
                 bPipe.BBList = broadBBList.value();
@@ -285,7 +325,7 @@ public class SparkPipe implements Serializable {
     }
 
     /**
-     *
+     * This method runs the Sparkhit pipeline using Spark RDD operations.
      */
     public void spark(){
         SparkConf conf = setSparkConfiguration();
@@ -299,6 +339,12 @@ public class SparkPipe implements Serializable {
 
         if (param.filename){
             class Tuple2String implements Function<Tuple2<String, String>, String>, Serializable{
+                /**
+                 * This function implements the Spark {@link FlatMapFunction}.
+                 *
+                 * @param s a tuple consists of the filename and the sequence header.
+                 * @return a concatenated string combining filename and sequence header as sequence header.
+                 */
                 public String call(Tuple2<String, String> s){
                     if (s._2.startsWith("@")) {
                         return ("@" + s._1 + "|" + s._2);
@@ -371,6 +417,13 @@ public class SparkPipe implements Serializable {
         info.screenDump();
 
         class FastqFilter implements Function<String, Boolean>, Serializable{
+
+            /**
+             * This method filters the input fastq stream.
+             *
+             * @param s each line of the fastq file.
+             * @return filter or not.
+             */
             public Boolean call(String s){
                 if (s != null){
 //                    if (s.startsWith("@")){
@@ -387,6 +440,13 @@ public class SparkPipe implements Serializable {
         class FastqConcat implements Function<String, String>, Serializable{
             String line = "";
             int lineMark = 0;
+
+            /**
+             * This method concatenates a fastq header and a fastq sequence into a line.
+             *
+             * @param s a line of the input fastq file.
+             * @return the concatenated unit of fastq file.
+             */
             public String call(String s){
                 if (s.startsWith("@")){
                     line = s;
@@ -407,6 +467,12 @@ public class SparkPipe implements Serializable {
 
             BatchAlignPipe bPipe = new BatchAlignPipe(broadParam.value());
 
+            /**
+             * This method applies {@link BatchAlignPipe} (the fragment recruitment) pipeline to each partition of the RDD.
+             *
+             * @param s an input fastq unit.
+             * @return the result of the fragment recruitment.
+             */
             public Iterator<String> call(String s){
 
                 bPipe.BBList = broadBBList.value();
@@ -443,14 +509,29 @@ public class SparkPipe implements Serializable {
         sc.stop();
     }
 
+    /**
+     * This method sets the input parameters.
+     *
+     * @param param {@link DefaultParam}.
+     */
     public void setParam(DefaultParam param){
         this.param = param;
     }
 
+    /**
+     * This method sets the reference builder object.
+     *
+     * @param ref {@link RefStructBuilder}.
+     */
     public void setStruct(RefStructBuilder ref) {
     //    this.ref = ref;
     }
 
+    /**
+     * This method sets the scoring matrix for sequence alignment.
+     *
+     * @param mat {@link ScoreMatrix}.
+     */
     public void setMatrix(ScoreMatrix mat){
       //  this.mat = mat;
     }
