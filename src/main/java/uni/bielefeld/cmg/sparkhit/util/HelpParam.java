@@ -97,7 +97,7 @@ public class HelpParam {
             }
         });
 
-        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.Main sparkhit.jar");
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfMapper sparkhit.jar");
         final String executable2 = System.getProperty("executable2", "sparkhit mapper [spark parameter]");
         err.println("Name:");
         err.println("\tSparkHit Mapper");
@@ -106,7 +106,7 @@ public class HelpParam {
         formatter.printOptions(new PrintWriter(err, true), 85, parameter, 2, 3); /* print formatted parameters */
         err.println();
         err.println("Usage:");
-        err.println("\trun read mapping : ");
+        err.println("\trun short read mapping : ");
         err.println(executable + " [parameters] -fastq query.fq -reference reference.fa -outfile output_file");
         err.println(executable + " [parameters] -line query.txt -reference reference.fa -outfile output_file");
         err.println(executable2 + " [parameters] -fastq query.fq -reference reference.fa -outfile output_file\"");
@@ -206,7 +206,7 @@ public class HelpParam {
             }
         });
 
-        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfPiper Sparkhit.jar");
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfParallelizer Sparkhit.jar");
         final String executable2 = System.getProperty("executable2", "sparkhit parallelizer [spark parameter]");
         err.println("Name:");
         err.println("\tSparkHit Parallelizer");
@@ -260,7 +260,7 @@ public class HelpParam {
             }
         });
 
-        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfPiper Sparkhit.jar");
+        final String executable = System.getProperty("executable", "spark-submit [spark parameter] --class uni.bielefeld.cmg.sparkhit.main.MainOfDecompresser Sparkhit.jar");
         final String executable2 = System.getProperty("executable2", "sparkhit decompresser [spark parameter]");
         err.println("Name:");
         err.println("\tSparkHit Decompresser");

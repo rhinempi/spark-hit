@@ -155,7 +155,7 @@ public class TextFileBufferInput implements InputFileManager{
             if (!inputcFile.exists()){
                 info.readMessage("However, it is not there, please check it again");
                 info.screenDump();
-                System.exit(0);
+                throw new RuntimeException("Input file is not in the assigned path.");
             }else {
                 info.readMessage("Reading fastq file using FastqUnitBuffer");
                 info.screenDump();

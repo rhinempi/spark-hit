@@ -266,7 +266,7 @@ public class Parameter {
             }
 
             if ((value = cl.getOptionValue(KMER_SIZE)) != null){
-                if (Integer.decode(value) >= 8 || Integer.decode(value) <= 14){
+                if (Integer.decode(value) >= 8 && Integer.decode(value) <= 14){
                     param.kmerSize = Integer.decode(value);
                     param.setKmerSize(param.kmerSize);
                 }else{
@@ -276,7 +276,7 @@ public class Parameter {
             }
 
             if ((value = cl.getOptionValue(OVERLAP)) != null){
-                if (Integer.decode(value) >= 0 || Integer.decode(value) <= param.kmerSize){
+                if (Integer.decode(value) >= 0 && Integer.decode(value) <= param.kmerSize){
                     param.kmerOverlap = Integer.decode(value);
                 }else{
                     throw new RuntimeException("Parameter " + OVERLAP +
@@ -371,7 +371,7 @@ public class Parameter {
             }else {
                 help.printHelp();
                 System.exit(0);
-                //throw new IOException("Input query file not specified.\nUse -help for list of options");
+ //               throw new IOException("Input query file not specified.\nUse -help for list of options");
             }
 
 			/* not applicable for HDFS and S3 */
@@ -387,6 +387,7 @@ public class Parameter {
             }else{
                 info.readMessage("Output file not set of -outfile options");
                 info.screenDump();
+                throw new RuntimeException("Parameter " + OUTPUT_FILE + " is not set");
             }
 
             if ((value = cl.getOptionValue(INPUT_REF)) != null){
@@ -394,12 +395,14 @@ public class Parameter {
             }else{
                 info.readMessage("Input reference file had not specified.");
                 info.screenDump();
+                throw new RuntimeException("Parameter " + INPUT_REF + " is not set");
             }
 
             File inputFasta = new File(param.inputFaPath).getAbsoluteFile();
             if (!inputFasta.exists()){
                 info.readMessage("Input reference file had not found.");
                 info.screenDump();
+                throw new RuntimeException("Parameter " + INPUT_REF + " file not found");
             }
 
             File outfile = new File(param.outputPath).getAbsoluteFile();
@@ -432,17 +435,17 @@ public class Parameter {
             info.readMessage("Parameter settings incorrect.");
             info.screenDump();
             e.printStackTrace();
-            System.exit(0);
+//            System.exit(0);
         } catch (RuntimeException e){
             info.readMessage("Parameter settings incorrect.");
             info.screenDump();
             e.printStackTrace();
-            System.exit(0);
+ //           System.exit(0);
         } catch (ParseException e){
             info.readMessage("Parameter settings incorrect.");
             info.screenDump();
             e.printStackTrace();
-            System.exit(0);
+ //           System.exit(0);
         }
 
         return param;
